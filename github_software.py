@@ -1,4 +1,5 @@
 from github import Github
+import json
 
 
 def login_token(access_token):
@@ -7,8 +8,8 @@ def login_token(access_token):
 
 
 def handle_auth(credentials):
-    if "access_token" in credentials:
-        github_service = login_token(access_token=credentials["access_token"])
+    if "accessToken" in credentials:
+        github_service = login_token(access_token=credentials["accessToken"])
     else:
         raise Exception("Invalid Credentials")
     return github_service
@@ -81,8 +82,22 @@ def jsonify_file(file):
 
 
 
-def github_get_user_repos(credentials, params):
+def github_get_user_repos(creds, params):
+    """
+    Get a list of repositories for a GitHub user.
+
+    :param credentials: Dictionary containing GitHub authentication credentials.
+    :type credentials: dict
+    :param params: Dictionary containing parameters.
+    
+        - :username: (str, required) - The GitHub username for which to retrieve repositories.
+
+    :return: A list of repositories for the specified GitHub user.
+    :rtype: list
+    :raises Exception: If there is an issue with the GitHub API or missing input data.
+    """
     try:
+        credentials=json.loads(creds)
         github_service = handle_auth(credentials)
         if (
             "username" in params
@@ -98,22 +113,23 @@ def github_get_user_repos(credentials, params):
         raise Exception(e)
 
 
-# def github_get_top_referrers(credentials, params):
-#     try:
-#         github_service = handle_auth(credentials)
-#         if "owner" in params and params["owner"] is not None and params["owner"] != "" and 'repo_name' in params and params["repo_name"] is not None and params["repo_name"] != "":
-#             owner = github_service.get_user(params["owner"])
-#             repo = owner.get_repo(params["repo_name"])
-#             referrers = repo.get_top_referrers()
-#             return [referrer for referrer in referrers]
-#         else:
-#             raise Exception("Missing input data")
-#     except Exception as e:
-#         raise Exception(e)
+def github_get_repo_license(creds, params):
+    """
+    Get the license information for a GitHub repository.
 
+    :param credentials: Dictionary containing GitHub authentication credentials.
+    :type credentials: dict
+    :param params: Dictionary containing parameters.
 
-def github_get_repo_license(credentials, params):
+        - :owner: (str, required) - The owner of the GitHub repository.
+        - :repo_name: (str, required) - The name of the GitHub repository.
+
+    :return: License information for the specified GitHub repository.
+    :rtype: dict
+    :raises Exception: If there is an issue with the GitHub API or missing input data.
+    """
     try:
+        credentials=json.loads(creds)
         github_service = handle_auth(credentials)
         if (
             "owner" in params
@@ -133,8 +149,23 @@ def github_get_repo_license(credentials, params):
         raise Exception(e)
 
 
-def github_get_repo_issues(credentials, params):
+def github_get_repo_issues(creds, params):
+    """
+    Get a list of issues for a GitHub repository.
+
+    :param credentials: Dictionary containing GitHub authentication credentials.
+    :type credentials: dict
+    :param params: Dictionary containing parameters.
+
+        - :owner: (str, required) - The owner of the GitHub repository.
+        - :repo_name: (str, required) - The name of the GitHub repository.
+
+    :return: A list of issues for the specified GitHub repository.
+    :rtype: list
+    :raises Exception: If there is an issue with the GitHub API or missing input data.
+    """
     try:
+        credentials=json.loads(creds)
         github_service = handle_auth(credentials)
         if (
             "owner" in params
@@ -154,8 +185,23 @@ def github_get_repo_issues(credentials, params):
         raise Exception(e)
 
 
-def github_get_repo(credentials, params):
+def github_get_repo(creds, params):
+    """
+    Get information about a GitHub repository.
+
+    :param credentials: Dictionary containing GitHub authentication credentials.
+    :type credentials: dict
+    :param params: Dictionary containing parameters.
+
+        - :owner: (str, required) - The owner of the GitHub repository.
+        - :repo_name: (str, required) - The name of the GitHub repository.
+
+    :return: Information about the specified GitHub repository.
+    :rtype: dict
+    :raises Exception: If there is an issue with the GitHub API or missing input data.
+    """
     try:
+        credentials=json.loads(creds)
         github_service = handle_auth(credentials)
         if (
             "owner" in params
@@ -174,8 +220,25 @@ def github_get_repo(credentials, params):
         raise Exception(e)
 
 
-def github_create_repo_release(credentials, params):
+def github_create_repo_release(creds, params):
+    """
+    Create a release for a GitHub repository.
+
+    :param credentials: Dictionary containing GitHub authentication credentials.
+    :type credentials: dict
+    :param params: Dictionary containing parameters.
+
+        - :owner: (str, required) - The owner of the GitHub repository.
+        - :repo_name: (str, required) - The name of the GitHub repository.
+        - :tag_name: (str, required) - The name of the tag for the release.
+        - :additionals: (dict, optional) - Additional parameters for creating the release.
+
+    :return: Information about the created release.
+    :rtype: dict
+    :raises Exception: If there is an issue with the GitHub API or missing input data.
+    """
     try:
+        credentials=json.loads(creds)
         github_service = handle_auth(credentials)
         if (
             "owner" in params
@@ -205,8 +268,23 @@ def github_create_repo_release(credentials, params):
         raise Exception(e)
 
 
-def github_get_repo_releases(credentials, params):
+def github_get_repo_releases(creds, params):
+    """
+    Get a list of releases for a GitHub repository.
+
+    :param credentials: Dictionary containing GitHub authentication credentials.
+    :type credentials: dict
+    :param params: Dictionary containing parameters.
+
+        - :owner: (str, required) - The owner of the GitHub repository.
+        - :repo_name: (str, required) - The name of the GitHub repository.
+
+    :return: A list of releases for the specified GitHub repository.
+    :rtype: list
+    :raises Exception: If there is an issue with the GitHub API or missing input data.
+    """
     try:
+        credentials=json.loads(creds)
         github_service = handle_auth(credentials)
         if (
             "owner" in params
@@ -226,8 +304,24 @@ def github_get_repo_releases(credentials, params):
         raise Exception(e)
 
 
-def github_get_release(credentials, params):
+def github_get_release(creds, params):
+    """
+    Get information about a GitHub release.
+
+    :param credentials: Dictionary containing GitHub authentication credentials.
+    :type credentials: dict
+    :param params: Dictionary containing parameters.
+
+        - :owner: (str, required) - The owner of the GitHub repository.
+        - :repo_name: (str, required) - The name of the GitHub repository.
+        - :tag_name: (str, required) - The name of the tag for the release.
+
+    :return: Information about the specified GitHub release.
+    :rtype: dict
+    :raises Exception: If there is an issue with the GitHub API or missing input data.
+    """
     try:
+        credentials=json.loads(creds)
         github_service = handle_auth(credentials)
         if (
             "owner" in params
@@ -250,8 +344,25 @@ def github_get_release(credentials, params):
         raise Exception(e)
 
 
-def github_update_release(credentials, params):
+def github_update_release(creds, params):
+    """
+    Update information about a GitHub release.
+
+    :param credentials: Dictionary containing GitHub authentication credentials.
+    :type credentials: dict
+    :param params: Dictionary containing parameters.
+
+        - :owner: (str, required) - The owner of the GitHub repository.
+        - :repo_name: (str, required) - The name of the GitHub repository.
+        - :tag_name: (str, required) - The name of the tag for the release.
+        - :additionals: (dict, optional) - Additional parameters for updating the release.
+
+    :return: Updated information about the GitHub release.
+    :rtype: dict
+    :raises Exception: If there is an issue with the GitHub API or missing input data.
+    """
     try:
+        credentials=json.loads(creds)
         github_service = handle_auth(credentials)
         if (
             "owner" in params
@@ -282,8 +393,24 @@ def github_update_release(credentials, params):
         raise Exception(e)
 
 
-def gihtub_delete_release(credentials, params):
+def gihtub_delete_release(creds, params):
+    """
+    Delete a GitHub release.
+
+    :param credentials: Dictionary containing GitHub authentication credentials.
+    :type credentials: dict
+    :param params: Dictionary containing parameters.
+
+        - :owner: (str, required) - The owner of the GitHub repository.
+        - :repo_name: (str, required) - The name of the GitHub repository.
+        - :tag_name: (str, required) - The name of the tag for the release.
+
+    :return: A message indicating successful deletion of the GitHub release.
+    :rtype: str
+    :raises Exception: If there is an issue with the GitHub API or missing input data.
+    """
     try:
+        credentials=json.loads(creds)
         github_service = handle_auth(credentials)
         if (
             "owner" in params
@@ -307,8 +434,22 @@ def gihtub_delete_release(credentials, params):
         raise Exception(e)
 
 
-def github_get_organization_repos(credentials, params):
+def github_get_organization_repos(creds, params):
+    """
+    Get a list of repositories for a GitHub organization.
+
+    :param credentials: Dictionary containing GitHub authentication credentials.
+    :type credentials: dict
+    :param params: Dictionary containing parameters.
+
+        - :organization: (str, required) - The name of the GitHub organization.
+
+    :return: A list of repositories for the specified GitHub organization.
+    :rtype: list
+    :raises Exception: If there is an issue with the GitHub API or missing input data.
+    """
     try:
+        credentials=json.loads(creds)
         github_service = handle_auth(credentials)
         if (
             "organization" in params
@@ -324,8 +465,25 @@ def github_get_organization_repos(credentials, params):
         raise Exception(e)
 
 
-def github_create_issue(credentials, params):
+def github_create_issue(creds, params):
+    """
+    Create a GitHub issue for a repository.
+
+    :param credentials: Dictionary containing GitHub authentication credentials.
+    :type credentials: dict
+    :param params: Dictionary containing parameters.
+
+        - :owner: (str, required) - The owner of the GitHub repository.
+        - :repo_name: (str, required) - The name of the GitHub repository.
+        - :title: (str, required) - The title of the GitHub issue.
+        - :additionals: (dict, optional) - Additional parameters for creating the issue.
+
+    :return: Information about the created GitHub issue.
+    :rtype: dict
+    :raises Exception: If there is an issue with the GitHub API or missing input data.
+    """
     try:
+        credentials=json.loads(creds)
         github_service = handle_auth(credentials)
         if (
             "owner" in params
@@ -356,8 +514,24 @@ def github_create_issue(credentials, params):
         raise Exception(e)
 
 
-def github_get_issue(credentials, params):
+def github_get_issue(creds, params):
+    """
+    Get information about a GitHub issue.
+
+    :param credentials: Dictionary containing GitHub authentication credentials.
+    :type credentials: dict
+    :param params: Dictionary containing parameters.
+
+        - :owner: (str, required) - The owner of the GitHub repository.
+        - :repo_name: (str, required) - The name of the GitHub repository.
+        - :issue_number: (str, required) - The number of the GitHub issue.
+
+    :return: Information about the specified GitHub issue.
+    :rtype: dict
+    :raises Exception: If there is an issue with the GitHub API or missing input data.
+    """
     try:
+        credentials=json.loads(creds)
         github_service = handle_auth(credentials)
         if (
             "owner" in params
@@ -380,8 +554,25 @@ def github_get_issue(credentials, params):
         raise Exception(e)
 
 
-def github_create_issue_comment(credentials, params):
+def github_create_issue_comment(creds, params):
+    """
+    Create a comment for a GitHub issue.
+
+    :param credentials: Dictionary containing GitHub authentication credentials.
+    :type credentials: dict
+    :param params: Dictionary containing parameters.
+
+        - :owner: (str, required) - The owner of the GitHub repository.
+        - :repo_name: (str, required) - The name of the GitHub repository.
+        - :issue_number: (str, required) - The number of the GitHub issue.
+        - :body: (str, required) - The body of the comment.
+
+    :return: Information about the GitHub issue after creating the comment.
+    :rtype: dict
+    :raises Exception: If there is an issue with the GitHub API or missing input data.
+    """
     try:
+        credentials=json.loads(creds)
         github_service = handle_auth(credentials)
         if (
             "owner" in params
@@ -408,8 +599,25 @@ def github_create_issue_comment(credentials, params):
         raise Exception(e)
 
 
-def github_edit_issue(credentials, params):
+def github_edit_issue(creds, params):
+    """
+    Edit details of a GitHub issue.
+
+    :param credentials: Dictionary containing GitHub authentication credentials.
+    :type credentials: dict
+    :param params: Dictionary containing parameters.
+
+        - :owner: (str, required) - The owner of the GitHub repository.
+        - :repo_name: (str, required) - The name of the GitHub repository.
+        - :issue_number: (str, required) - The number of the GitHub issue.
+        - :additionals: (dict, optional) - Additional parameters for editing the issue.
+
+    :return: Information about the GitHub issue after editing.
+    :rtype: dict
+    :raises Exception: If there is an issue with the GitHub API or missing input data.
+    """
     try:
+        credentials=json.loads(creds)
         github_service = handle_auth(credentials)
         if (
             "owner" in params
@@ -440,8 +648,24 @@ def github_edit_issue(credentials, params):
         raise Exception(e)
 
 
-def github_list_file(credentials, params):
+def github_list_file(creds, params):
+    """
+    List the content of a file in a GitHub repository.
+
+    :param credentials: Dictionary containing GitHub authentication credentials.
+    :type credentials: dict
+    :param params: Dictionary containing parameters.
+
+        - :path: (str, required) - The path to the file.
+        - :owner: (str, required) - The owner of the GitHub repository.
+        - :repo_name: (str, required) - The name of the GitHub repository.
+
+    :return: Information about the specified file in the GitHub repository.
+    :rtype: dict
+    :raises Exception: If there is an issue with the GitHub API or missing input data.
+    """
     try:
+        credentials=json.loads(creds)
         github_service = handle_auth(credentials)
         if (
             "path" in params
@@ -464,8 +688,26 @@ def github_list_file(credentials, params):
         raise Exception(e)
 
 
-def github_create_file(credentials, params):
+def github_create_file(creds, params):
+    """
+    Create a new file in a GitHub repository.
+
+    :param credentials: Dictionary containing GitHub authentication credentials.
+    :type credentials: dict
+    :param params: Dictionary containing parameters.
+
+        - :path: (str, required) - The path to the file.
+        - :owner: (str, required) - The owner of the GitHub repository.
+        - :repo_name: (str, required) - The name of the GitHub repository.
+        - :message: (str, required) - A commit message for creating the file.
+        - :content: (str, required) - The content of the file.
+
+    :return: Information about the created file in the GitHub repository.
+    :rtype: dict
+    :raises Exception: If there is an issue with the GitHub API or missing input data.
+    """
     try:
+        credentials=json.loads(creds)
         github_service = handle_auth(credentials)
         if (
             "path" in params
@@ -496,8 +738,25 @@ def github_create_file(credentials, params):
         raise Exception(e)
 
 
-def github_delete_file(credentials, params):
+def github_delete_file(creds, params):
+    """
+    Delete a file from a GitHub repository.
+
+    :param credentials: Dictionary containing GitHub authentication credentials.
+    :type credentials: dict
+    :param params: Dictionary containing parameters.
+
+        - :path: (str, required) - The path to the file.
+        - :owner: (str, required) - The owner of the GitHub repository.
+        - :repo_name: (str, required) - The name of the GitHub repository.
+        - :message: (str, required) - A commit message for deleting the file.
+
+    :return: A message indicating successful deletion of the file.
+    :rtype: str
+    :raises Exception: If there is an issue with the GitHub API or missing input data.
+    """
     try:
+        credentials=json.loads(creds)
         github_service = handle_auth(credentials)
         if (
             "path" in params
@@ -524,8 +783,26 @@ def github_delete_file(credentials, params):
         raise Exception(e)
 
 
-def github_edit_file(credentials, params):
+def github_edit_file(creds, params):
+    """
+    Edit an existing file in a GitHub repository.
+
+    :param credentials: Dictionary containing GitHub authentication credentials.
+    :type credentials: dict
+    :param params: Dictionary containing parameters.
+
+        - :path: (str, required) - The path to the file.
+        - :owner: (str, required) - The owner of the GitHub repository.
+        - :repo_name: (str, required) - The name of the GitHub repository.
+        - :message: (str, required) - A commit message for editing the file.
+        - :content: (str, required) - The new content of the file.
+
+    :return: A message indicating successful update of the file.
+    :rtype: str
+    :raises Exception: If there is an issue with the GitHub API or missing input data.
+    """
     try:
+        credentials=json.loads(creds)
         github_service = handle_auth(credentials)
         if (
             "path" in params

@@ -1,20 +1,41 @@
 import io
 from jira import JIRA, JIRAError
 import requests
+import json
 
-def authenticate(email,api_token,server):
-    response = requests.get(server)
+def authenticate(creds):
+    response = requests.get(creds['domain'])
     if response.status_code == 200:
-        jira = JIRA(server=server,
-                basic_auth=(email, api_token))
+        jira = JIRA(server=creds['domain'],
+                basic_auth=(creds['email'], creds['apiToken']))
         return jira
     else:
-        raise Exception('error: Auth Exception')
+        raise Exception('error: Incorrect domain, server responded with status code ' + str(response.status_code))
     
-def jira_get_issues(params,email,api_token,server):
+def jira_get_issues(params,cred):
+    """
+    Retrieve Jira issues based on specified parameters.
+
+    :param dict params:
+        - jql_str (dict): Jira Query Language (JQL) string parameters.
+            - project (str): Jira project key. (required)
+            - status (str): Desired issue status. (optional)
+        - maxResults (int): Maximum number of issues to return. (optional)
+        - expand (str): Additional information to include in the response. (optional)
+        - fields (str): Comma-separated list of fields to include in the response. (optional)
+        - properties (str): Comma-separated list of issue properties to include in the response. (optional)
+
+    :param str email: User email for Jira authentication. (required)
+    :param str api_token: Jira API token for authentication. (required)
+    :param str server: Jira server URL. (required)
+
+    :return: List of Jira issues as dictionaries.
+    :rtype: list
+    """
     try:
-        if email and api_token and server and 'jql_str' in params:
-            jira = authenticate(email,api_token,server)
+        creds=json.loads(cred)
+        if 'email' in creds and 'apiToken' in creds and 'domain' in creds and 'jql_str' in params:
+            jira = authenticate(creds)
             data = {}
             jql_parts = []
             for key, value in params.items():
@@ -37,10 +58,27 @@ def jira_get_issues(params,email,api_token,server):
     except Exception as e:
         raise Exception(f"error: {str(e)}")
     
-def jira_get_issue(params,email,api_token,server):
+def jira_get_issue(params,cred):
+    """
+    Retrieve details of a specific Jira issue.
+
+    :param dict params:
+        - id (str): Jira issue ID. (required)
+        - expand (str): Additional information to include in the response. (optional)
+        - fields (str): Comma-separated list of fields to include in the response. (optional)
+        - properties (str): Comma-separated list of issue properties to include in the response. (optional)
+
+    :param str email: User email for Jira authentication. (required)
+    :param str api_token: Jira API token for authentication. (required)
+    :param str server: Jira server URL. (required)
+
+    :return: Dictionary containing details of the specified Jira issue.
+    :rtype: dict
+    """
     try:
-        if email and api_token and server and 'id' in params:
-            jira = authenticate(email,api_token,server)
+        creds=json.loads(cred)
+        if 'email' in creds and 'apiToken' in creds and 'domain' in creds and 'id' in params:
+            jira = authenticate(creds)
             data = {}
             for key, value in params.items():
                 if value:
@@ -57,10 +95,30 @@ def jira_get_issue(params,email,api_token,server):
 
 
 
-def jira_create_issue(params,email,api_token,server):
+def jira_create_issue(params,cred):
+    """
+    Create a new Jira issue.
+
+    :param dict params:
+        - project (str): Key or ID of the Jira project. (required)
+        - issuetype (str): Type of the issue. (required)
+        - summary (str): Summary or title of the issue. (required)
+        - description (str): Description of the issue. (optional)
+        - reporter (dict): Dictionary containing information about the reporter.
+            - id (str): ID of the reporter. (optional)
+        - assignee (str): User ID or name to assign the issue. (optional)
+
+    :param str email: User email for Jira authentication. (required)
+    :param str api_token: Jira API token for authentication. (required)
+    :param str server: Jira server URL. (required)
+
+    :return: Dictionary containing details of the created Jira issue.
+    :rtype: dict
+    """
     try:
-        if email and api_token and server and 'project' in params and 'issuetype' in params and 'summary' in params:
-            jira = authenticate(email,api_token,server)
+        creds=json.loads(cred)
+        if 'email' in creds and 'apiToken' in creds and 'domain' in creds and 'project' in params and 'issuetype' in params and 'summary' in params:
+            jira = authenticate(creds)
             data = {}
             for key, value in params.items():
                 if value:
@@ -75,10 +133,24 @@ def jira_create_issue(params,email,api_token,server):
         raise Exception(f"error: {str(e)}")
 
 
-def jira_delete_issue(params,email,api_token,server):
+def jira_delete_issue(params,cred):
+    """
+    Delete a Jira issue.
+
+    :param dict params:
+        - id (str): ID of the Jira issue to delete. (required)
+
+    :param str email: User email for Jira authentication. (required)
+    :param str api_token: Jira API token for authentication. (required)
+    :param str server: Jira server URL. (required)
+
+    :return: Success message indicating the deletion of the Jira issue.
+    :rtype: str
+    """
     try:
-        if email and server and api_token and 'id' in params:
-            jira = authenticate(email,api_token,server)
+        creds=json.loads(cred)
+        if 'email' in creds and 'apiToken' in creds and 'domain' in creds and 'id' in params:
+            jira = authenticate(creds)
             data = {}
             for key, value in params.items():
                 if value:
@@ -97,10 +169,25 @@ def jira_delete_issue(params,email,api_token,server):
     except Exception as e:
         raise Exception(f"error: {str(e)}")
 
-def jira_create_comment(params,email,api_token,server):
+def jira_create_comment(params,cred):
+    """
+    Create a comment for a Jira issue.
+
+    :param dict params:
+        - issue (str): Key or ID of the Jira issue to comment on. (required)
+        - body (str): Body text of the comment. (required)
+
+    :param str email: User email for Jira authentication. (required)
+    :param str api_token: Jira API token for authentication. (required)
+    :param str server: Jira server URL. (required)
+
+    :return: Information about the created comment.
+    :rtype: dict
+    """
     try:
-        if email and api_token and server and  'issue' in params and 'body' in params:
-            jira = authenticate(email,api_token,server)
+        creds=json.loads(cred)
+        if 'email' in creds and 'apiToken' in creds and 'domain' in creds and  'issue' in params and 'body' in params:
+            jira = authenticate(creds)
             data = {}
             for key, value in params.items():
                 if value:
@@ -114,10 +201,25 @@ def jira_create_comment(params,email,api_token,server):
     except Exception as e:
         raise Exception(f"error: {str(e)}")
 
-def jira_get_comments(params,email,api_token,server):
+def jira_get_comments(params,cred):
+    """
+    Retrieve comments for a Jira issue.
+
+    :param dict params:
+        - issue (str): Key or ID of the Jira issue to retrieve comments for. (required)
+        - expand (str): Additional information to include in the response. (optional)
+
+    :param str email: User email for Jira authentication. (required)
+    :param str api_token: Jira API token for authentication. (required)
+    :param str server: Jira server URL. (required)
+
+    :return: List of comments for the specified Jira issue.
+    :rtype: list
+    """
     try:
-        if email and api_token and server and 'issue' in params:
-            jira = authenticate(email,api_token,server)
+        creds=json.loads(cred)
+        if 'email' in creds and 'apiToken' in creds and 'domain' in creds and 'issue' in params:
+            jira = authenticate(creds)
             data = {}
             for key, value in params.items():
                 if value:
@@ -132,10 +234,26 @@ def jira_get_comments(params,email,api_token,server):
     except Exception as e:
         raise Exception(f"error: {str(e)}")
 
-def jira_get_comment(params,email,api_token,server):
+def jira_get_comment(params,cred):
+    """
+    Retrieve a specific comment for a Jira issue.
+
+    :param dict params:
+        - issue (str): Key or ID of the Jira issue containing the comment. (required)
+        - comment (str): ID of the comment to retrieve. (required)
+        - expand (str): Additional information to include in the response. (optional)
+
+    :param str email: User email for Jira authentication. (required)
+    :param str api_token: Jira API token for authentication. (required)
+    :param str server: Jira server URL. (required)
+
+    :return: Information about the specified Jira comment.
+    :rtype: dict
+    """
     try:
-        if email and api_token and server and 'issue' in params and 'comment' in params:
-            jira = authenticate(email,api_token,server)
+        creds=json.loads(cred)
+        if 'email' in creds and 'apiToken' in creds and 'domain' in creds and 'issue' in params and 'comment' in params:
+            jira = authenticate(creds)
             data = {}
             for key, value in params.items():
                 if value:
@@ -149,10 +267,25 @@ def jira_get_comment(params,email,api_token,server):
     except Exception as e:
         raise Exception(f"error: {str(e)}")
     
-def jira_delete_comment(params,email,api_token,server):
+def jira_delete_comment(params,cred):
+    """
+    Delete a specific comment for a Jira issue.
+
+    :param dict params:
+        - issue (str): Key or ID of the Jira issue containing the comment. (required)
+        - comment (str): ID of the comment to delete. (required)
+
+    :param str email: User email for Jira authentication. (required)
+    :param str api_token: Jira API token for authentication. (required)
+    :param str server: Jira server URL. (required)
+
+    :return: Success message indicating the comment was deleted.
+    :rtype: str
+    """
     try:
-        if email and api_token and server and 'issue' in params and 'comment' in params:
-            jira = authenticate(email,api_token,server)
+        creds=json.loads(cred)
+        if 'email' in creds and 'apiToken' in creds and 'domain' in creds and 'issue' in params and 'comment' in params:
+            jira = authenticate(creds)
             data = {}
             for key, value in params.items():
                 if value:
@@ -167,10 +300,26 @@ def jira_delete_comment(params,email,api_token,server):
     except Exception as e:
         raise Exception(f"error: {str(e)}")
     
-def jira_update_comment(params,email,api_token,server):
+def jira_update_comment(params,cred):
+    """
+    Update a specific comment for a Jira issue.
+
+    :param dict params:
+        - issue (str): Key or ID of the Jira issue containing the comment. (required)
+        - comment (str): ID of the comment to update. (required)
+        - body (str): New body text for the comment. (required)
+
+    :param str email: User email for Jira authentication. (required)
+    :param str api_token: Jira API token for authentication. (required)
+    :param str server: Jira server URL. (required)
+
+    :return: Success message indicating the comment was updated.
+    :rtype: str
+    """
     try:
-        if email and api_token and server and 'issue' in params and 'body' in params and 'comment' in params:
-            jira = authenticate(email,api_token,server)
+        creds=json.loads(cred)
+        if 'email' in creds and 'apiToken' in creds and 'domain' in creds and 'issue' in params and 'body' in params and 'comment' in params:
+            jira = authenticate(creds)
             data = {}
             for key, value in params.items():
                 if key=='issue' or key=='comment':
@@ -192,10 +341,27 @@ def jira_update_comment(params,email,api_token,server):
         raise Exception(f"error: {str(e)}")
     
 
-def jira_create_attachment(params,email,api_token,server):
+def jira_create_attachment(params,cred):
+    """
+    Create an attachment for a specific Jira issue.
+
+    :param dict params:
+        - issue (str): Key or ID of the Jira issue for which to create the attachment. (required)
+        - filename (str): Name of the attachment file. (required)
+        - attachment (bytes): Binary content of the attachment. (required, if 'url' is not provided)
+        - url (str): URL of the file to attach. (required, if 'attachment' is not provided)
+
+    :param str email: User email for Jira authentication. (required)
+    :param str api_token: Jira API token for authentication. (required)
+    :param str server: Jira server URL. (required)
+
+    :return: Success message indicating the attachment was created successfully.
+    :rtype: str
+    """
     try:
-        if email and api_token and server and 'issue' in params and ('attachment' in params or 'url' in params) and 'filename' in params:
-            jira = authenticate(email,api_token,server)
+        creds=json.loads(cred)
+        if 'email' in creds and 'apiToken' in creds and 'domain' in creds and 'issue' in params and ('attachment' in params or 'url' in params) and 'filename' in params:
+            jira = authenticate(creds)
             data = {}
             for key, value in params.items():
                 if value:
@@ -226,14 +392,28 @@ def jira_create_attachment(params,email,api_token,server):
     except Exception as e:
         raise Exception(f"error: {str(e)}")
 
-def jira_get_attachments(params,email,api_token,server):
+def jira_get_attachments(params,cred):
+    """
+    Retrieve information about attachments for a specific Jira issue.
+
+    :param dict params:
+        - id (str): Key or ID of the Jira issue for which to retrieve attachments. (required)
+
+    :param str email: User email for Jira authentication. (required)
+    :param str api_token: Jira API token for authentication. (required)
+    :param str server: Jira server URL. (required)
+
+    :return: List of dictionaries containing information about attachments for the specified Jira issue.
+    :rtype: list[dict]
+    """
     try:
-        if email and server and api_token and 'id' in params:
+        creds=json.loads(cred)
+        if 'email' in creds and 'apiToken' in creds and 'domain' in creds and 'id' in params:
             data = {}
             for key, value in params.items():
                 if value:
                     data[key] = value
-            jira = authenticate(email,api_token,server)
+            jira = authenticate(creds)
             issue = jira.issue(data['id'])
             attachments = issue.fields.attachment 
             attachment_info = []
@@ -248,14 +428,28 @@ def jira_get_attachments(params,email,api_token,server):
     except Exception as e:
         raise Exception(f"error: {str(e)}")
 
-def jira_get_attachment(params,email,api_token,server):
+def jira_get_attachment(params,cred):
+    """
+    Retrieve information about a specific attachment in Jira.
+
+    :param dict params:
+        - id (str): ID of the attachment to retrieve. (required)
+
+    :param str email: User email for Jira authentication. (required)
+    :param str api_token: Jira API token for authentication. (required)
+    :param str server: Jira server URL. (required)
+
+    :return: Dictionary containing information about the specified Jira attachment.
+    :rtype: dict
+    """
     try:
-        if email and server and api_token and 'id' in params:
+        creds=json.loads(cred)
+        if 'email' in creds and 'apiToken' in creds and 'domain' in creds and 'id' in params:
             data = {}
             for key, value in params.items():
                 if value:
                     data[key] = value
-            jira = authenticate(email,api_token,server)
+            jira = authenticate(creds)
             attachment = jira.attachment(data['id'])
             attachment_dict = attachment.raw
             return attachment_dict
@@ -266,14 +460,28 @@ def jira_get_attachment(params,email,api_token,server):
     except Exception as e:
         raise Exception(f"error: {str(e)}")
     
-def jira_delete_attachment(params,email,api_token,server):
+def jira_delete_attachment(params,cred):
+    """
+    Delete a specific attachment in Jira.
+
+    :param dict params:
+        - id (str): ID of the attachment to delete. (required)
+
+    :param str email: User email for Jira authentication. (required)
+    :param str api_token: Jira API token for authentication. (required)
+    :param str server: Jira server URL. (required)
+
+    :return: Success message indicating the attachment was deleted.
+    :rtype: str
+    """
     try:
-        if email and server and api_token and 'id' in params:
+        creds=json.loads(cred)
+        if 'email' in creds and 'apiToken' in creds and 'domain' in creds and 'id' in params:
             data = {}
             for key, value in params.items():
                 if value:
                     data[key] = value
-            jira = authenticate(email,api_token,server)
+            jira = authenticate(creds)
             attachment = jira.delete_attachment(data['id'])
             if attachment:
                 return "Attachment deleted successfully"
@@ -286,10 +494,25 @@ def jira_delete_attachment(params,email,api_token,server):
     except Exception as e:
         raise Exception(f"error: {str(e)}")
 
-def jira_create_user(params,email,api_token,server):
+def jira_create_user(params,cred):
+    """
+    Create a new user in Jira.
+
+    :param dict params:
+        - username (str): Username for the new user. (required)
+        - email (str): Email address for the new user. (required)
+
+    :param str email: User email for Jira authentication. (required)
+    :param str api_token: Jira API token for authentication. (required)
+    :param str server: Jira server URL. (required)
+
+    :return: Success message indicating the user was created.
+    :rtype: str
+    """
     try:
-        if email and server and api_token and 'username' in params and 'email' in params:
-            jira = authenticate(email,api_token,server)
+        creds=json.loads(cred)
+        if 'email' in creds and 'apiToken' in creds and 'domain' in creds and 'username' in params and 'email' in params:
+            jira = authenticate(creds)
             data = {}
             for key, value in params.items():
                 if value:
@@ -303,10 +526,24 @@ def jira_create_user(params,email,api_token,server):
     except Exception as e:
         raise Exception(f"error: {str(e)}")
     
-def jira_get_users(params,email,api_token,server):
+def jira_get_users(params,cred):
+    """
+    Get a list of users from Jira based on the specified query.
+
+    :param dict params:
+        - query (str): Query string to search for users. (required)
+
+    :param str email: User email for Jira authentication. (required)
+    :param str api_token: Jira API token for authentication. (required)
+    :param str server: Jira server URL. (required)
+
+    :return: List of users matching the specified query.
+    :rtype: list
+    """
     try:
-        if email and server and api_token and 'query' in params:
-            jira = authenticate(email,api_token,server)
+        creds=json.loads(cred)
+        if 'email' in creds and 'apiToken' in creds and 'domain' in creds and 'query' in params:
+            jira = authenticate(creds)
             data = {}
             for key, value in params.items():
                 if value:
@@ -321,10 +558,25 @@ def jira_get_users(params,email,api_token,server):
     except Exception as e:
         raise Exception(f"error: {str(e)}")
     
-def jira_get_user(params,email,api_token,server):
+def jira_get_user(params,cred):
+    """
+    Get information about a user from Jira based on the specified user ID.
+
+    :param dict params:
+        - id (str): User ID for fetching user information. (required)
+        - expand (str): Additional information to include in the response. (optional)
+
+    :param str email: User email for Jira authentication. (required)
+    :param str api_token: Jira API token for authentication. (required)
+    :param str server: Jira server URL. (required)
+
+    :return: Information about the specified user.
+    :rtype: dict
+    """
     try:
-        if email and server and api_token and 'id' in params:
-            jira = authenticate(email,api_token,server)
+        creds=json.loads(cred)
+        if 'email' in creds and 'apiToken' in creds and 'domain' in creds and 'id' in params:
+            jira = authenticate(creds)
             data = {}
             for key, value in params.items():
                 if value:

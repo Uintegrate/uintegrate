@@ -8,6 +8,7 @@ import requests
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 import json
+import logging
 
 
 def create_service(access_token, API_SERVICE_NAME, API_VERSION):
@@ -21,22 +22,51 @@ def create_service(access_token, API_SERVICE_NAME, API_VERSION):
             API_SERVICE_NAME, API_VERSION, credentials=creds, static_discovery=False
         )
 
-        print(API_SERVICE_NAME, API_VERSION, "service created successfully")
+        logging.warning(API_SERVICE_NAME, API_VERSION, 'service created successfully')
         return service
     except Exception as e:
-        print(e)
-        print(f"Failed to create service instance for {API_SERVICE_NAME}")
-        raise Exception(f"Failed to create service instance for {API_SERVICE_NAME}")
+        logging.warning(f'Failed to create service instance for {e}')
+        raise Exception(f'Failed to create service instance {e}')
 
 
+def create_token(cred):
+    try:
+        result={}
+        result['token']=cred['accessToken']
+        result['refresh_token']=cred['refreshToken']
+        result['token_uri']="https://oauth2.googleapis.com/token"
+        result['client_id']=cred['clientID']
+        result['client_secret']=cred['clientSecret']
+        result['scopes']=["https://mail.google.com/"]
+        result['expiry']=cred['expirey']
+        return json.dumps(result)
+    except Exception as e:
+        raise Exception(e)
 ##################################### here comes the code ##########################################
 
 
-################################################# Mesaages #########################################
+################################################# Messages #########################################
 
 
-def gmail_addLabel(access_token, API_SERVICE_NAME, API_VERSION, request):
+def gmail_addLabel(creds,API_SERVICE_NAME, API_VERSION, request):
+    """
+     Adds a label, which is A mechanism for organizing messages and threads, to a specific message.
+
+    :param str access_token: (str,required) Used for authentication. 
+    :param str API_SERVICE_NAME: (str,required) for the calendar, it's 'gmail'
+    :param str API_VERSION: (str,required) the version used is v1  
+    :param dict request: contains properties to be added to the updated paymentIntent
+       
+        - :message_id: (str,REQUIRED) the message id , to which the label will be added
+        - :label_id: (str,REQUIRED) The Id of the label to be added 
+        - :label_name: (str) The name of the label to be added
+        
+    :return: Details containing the Labels added to the message
+    :rtype: dict
+    """
     try:
+        cred=json.loads(creds)
+        access_token=create_token(cred)
         service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
         message_id = request.get("message_id", "")
         label_id = request.get("label_id", "")
@@ -66,8 +96,26 @@ def gmail_addLabel(access_token, API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_deleteMessage(access_token, API_SERVICE_NAME, API_VERSION, request):
+def gmail_deleteMessage(creds,API_SERVICE_NAME, API_VERSION, request):
+    """
+     Immediately and permanently deletes the specified message. This operation cannot be undone.
+
+    :param str access_token: (str,required) Used for authentication. 
+    :param str API_SERVICE_NAME: (str,required) for the calendar, it's 'gmail'
+    :param str API_VERSION: (str,required) the version used is v1
+    :param dict request: contains the id of the message to be deleted and the user Id
+       
+        - :userId: (str,REQUIRED) The user's email address. The special value me can be used to 
+                                  indicate the authenticated user.
+        - :message_id: (str,REQUIRED) The ID of the message to delete.
+      
+        
+    :return: Success or failure of the deletion process of the message
+    :rtype: dict
+    """
     try:
+        cred=json.loads(creds)
+        access_token=create_token(cred)
         service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
         message_id = request.get("message_id", "")
         if not message_id:
@@ -80,8 +128,26 @@ def gmail_deleteMessage(access_token, API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_getMessage(access_token, API_SERVICE_NAME, API_VERSION, request):
+def gmail_getMessage(creds,API_SERVICE_NAME, API_VERSION, request):
+    """
+     Gets the specified message.
+
+    :param str access_token: (str,required) Used for authentication. 
+    :param str API_SERVICE_NAME: (str,required) for the calendar, it's 'gmail'
+    :param str API_VERSION: (str,required) the version used is v1
+    :param dict request: contains the id of the message to be returned,and the user Id
+       
+        - :userId: (str,REQUIRED) The user's email address. The special value me can be used to 
+                                  indicate the authenticated user.
+        - :message_id: (str,REQUIRED) The ID of the message to be retrieved.
+      
+        
+    :return: If successful, the response body contains an instance of Message.
+    :rtype: dict
+    """
     try:
+        cred=json.loads(creds)
+        access_token=create_token(cred)
         service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
         scope = request.get("scope", "single")
 
@@ -117,8 +183,25 @@ def gmail_getMessage(access_token, API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_markAsRead(access_token, API_SERVICE_NAME, API_VERSION, request):
+def gmail_markAsRead(creds,API_SERVICE_NAME, API_VERSION, request):
+    """
+     Removes the 'UNREAD' label from a message 
+
+    :param str access_token: (str,required) Used for authentication. 
+    :param str API_SERVICE_NAME: (str,required) for the calendar, it's 'gmail'
+    :param str API_VERSION: (str,required) the version used is v1
+    :param dict request: contains paramaters to be added to the message
+       
+        - :userId: (str,REQUIRED) The user's email address. The special value me can be used to 
+                                  indicate the authenticated user.
+        - :message_id: (str,REQUIRED) The ID of the message whose label is to be changed.
+        
+    :return: Details containing the Labels attached to the message
+    :rtype: dict
+    """
     try:
+        cred=json.loads(creds)
+        access_token=create_token(cred)
         service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
         message_id = request.get("message_id", "")
         if not message_id:
@@ -135,8 +218,25 @@ def gmail_markAsRead(access_token, API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_markAsUnread(access_token, API_SERVICE_NAME, API_VERSION, request):
+def gmail_markAsUnread(creds,API_SERVICE_NAME, API_VERSION, request):
+    """
+     Adds the 'UNREAD' label from a message 
+
+    :param str access_token: (str,required) Used for authentication. 
+    :param str API_SERVICE_NAME: (str,required) for the calendar, it's 'gmail'
+    :param str API_VERSION: (str,required) the version used is v1
+    :param dict request: contains paramaters to be added to the message
+       
+        - :userId: (str,REQUIRED) The user's email address. The special value me can be used to 
+                                  indicate the authenticated user.
+        - :message_id: (str,REQUIRED) The ID of the message whose label is to be changed.
+        
+    :return: Details containing the Labels attached to the message
+    :rtype: dict
+    """
     try:
+        cred=json.loads(creds)
+        access_token=create_token(cred)
         service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
         message_id = request.get("message_id", "")
         if not message_id:
@@ -153,8 +253,26 @@ def gmail_markAsUnread(access_token, API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_removeLabel(access_token, API_SERVICE_NAME, API_VERSION, request):
+def gmail_removeLabel(creds,API_SERVICE_NAME, API_VERSION, request):
+    """
+     Removes a specific label from a message 
+
+    :param str access_token: (str,required) Used for authentication. 
+    :param str API_SERVICE_NAME: (str,required) for the calendar, it's 'gmail'
+    :param str API_VERSION: (str,required) the version used is v1
+    :param dict request: contains paramaters to be added to the message
+       
+        - :userId: (str,REQUIRED) The user's email address. The special value me can be used to 
+                                  indicate the authenticated user.
+        - :message_id: (str,REQUIRED) The ID of the message whose label is to be changed(or added).
+        - :label_id:  (str,REQUIRED) The ID of the label to be removed from a message.
+        
+    :return: Details containing the Labels attached to the message
+    :rtype: dict
+    """
     try:
+        cred=json.loads(creds)
+        access_token=create_token(cred)
         service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
         message_id = request.get("message_id", "")
         label_id = request.get("label_id", "")
@@ -184,8 +302,30 @@ def gmail_removeLabel(access_token, API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_replyToMessage(access_token, API_SERVICE_NAME, API_VERSION, request):
+def gmail_replyToMessage(creds,API_SERVICE_NAME, API_VERSION, request):
+    
+    """
+     Removes a specific label from a message 
+
+    :param str access_token: (str,required) Used for authentication. 
+    :param str API_SERVICE_NAME: (str,required) for the calendar, it's 'gmail'
+    :param str API_VERSION: (str,required) the version used is v1
+    :param dict request: contains paramaters to be added to the message
+       
+        - :in_reply_to: (str,REQUIRED) The ID of the message to reply to.
+        - :message:  (str,REQUIRED) The message body
+        - :type:  (str) The type of email
+        - :attachments_list:  (dict) Attachments are of two types: URL,ByteString
+                type,name,url.
+        - :bcc_recipients: (arr) to send an email to multiple people without each recipient knowing the email details of the others.
+        - :cc_recipients:  (arr) to send an email to multiple people with each recipient knowing the email details of the others.
+        
+    :return: Details about the reply message 
+    :rtype: dict
+    """
     try:
+        cred=json.loads(creds)
+        access_token=create_token(cred)
         to = ""
         subject = ""
         # id of the message we're replying to
@@ -260,8 +400,31 @@ def gmail_replyToMessage(access_token, API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_sendMessage(access_token, API_SERVICE_NAME, API_VERSION, request):
+def gmail_sendMessage(creds,API_SERVICE_NAME, API_VERSION, request):
+     
+    """
+    Sends the specified message to the recipients in the To, Cc, and Bcc headers.
+
+    :param str access_token: (str,required) Used for authentication. 
+    :param str API_SERVICE_NAME: (str,required) for the calendar, it's 'gmail'
+    :param str API_VERSION: (str,required) the version used is v1
+    :param dict request: contains paramaters to be added to the message
+       
+        - :to: (str,REQUIRED) The email of the user to whom the message is sent.
+        - :body:  (str,REQUIRED) The message body
+        - :cc:  (str) to send an email to multiple people without each recipient knowing the email details of the others.
+        - :bcc:  (str) to send an email to multiple people with each recipient knowing the email details of the others.
+        - :subject: (str) the subject of the message.
+        - :attachments_list: (dict) Attachments are of two types: URL,ByteString
+                type,name,url.
+        - :type: (str) the type of email.
+        
+    :return: Details about the reply message 
+    :rtype: dict
+    """
     try:
+        cred=json.loads(creds)
+        access_token=create_token(cred)
         to = request.get("to", None)
         body = request.get("body", None)
         cc = request.get("cc", None)
@@ -332,8 +495,24 @@ def gmail_sendMessage(access_token, API_SERVICE_NAME, API_VERSION, request):
 ################################################# Threads #########################################
 
 
-def gmail_addLabelToThread(access_token, API_SERVICE_NAME, API_VERSION, request):
+def gmail_addLabelToThread(creds,API_SERVICE_NAME, API_VERSION, request):
+    """
+     Adds a list of labels, which is A mechanism for organizing messages and threads, to a specific thread.
+
+    :param str access_token: (str,required) Used for authentication. 
+    :param str API_SERVICE_NAME: (str,required) for the calendar, it's 'gmail'
+    :param str API_VERSION: (str,required) the version used is v1  
+    :param dict request: contains properties to be added to the updated paymentIntent
+       
+        - :thread_id: (str,REQUIRED) the thread id , to which the label will be added
+        - :label_ids: (str,REQUIRED) The Id of the label to be added 
+        
+    :return: Details containing the Labels added to the thread
+    :rtype: dict
+    """
     try:
+        cred=json.loads(creds)
+        access_token=create_token(cred)
         service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
         thread_id = request.get("thread_id", "")
         ids = request.get("label_ids", None)
@@ -346,17 +525,35 @@ def gmail_addLabelToThread(access_token, API_SERVICE_NAME, API_VERSION, request)
             service.users()
             .threads()
             .modify(userId="me", id=thread_id, body={"addLabelIds": label_ids})
-            .execute()
+            .execute() 
         )
 
     except Exception as e:
         raise Exception(e)
 
 
-def gmail_deleteThread(access_token, API_SERVICE_NAME, API_VERSION, request):
+def gmail_deleteThread(creds,API_SERVICE_NAME, API_VERSION, request):
+    """
+     Immediately and permanently deletes the specified thread. Any messages that belong to the thread are also deleted.
+
+    :param str access_token: (str,required) Used for authentication. 
+    :param str API_SERVICE_NAME: (str,required) for the calendar, it's 'gmail'
+    :param str API_VERSION: (str,required) the version used is v1
+    :param dict request: contains the id of the thread to be deleted and the user Id
+       
+        - :userId: (str,REQUIRED) The user's email address. The special value me can be used to 
+                                  indicate the authenticated user.
+        - :thread_id: (str,REQUIRED) The ID of the thread to delete.
+      
+        
+    :return: Success or failure of the deletion of the thread
+    :rtype: dict
+    """
     try:
+        cred=json.loads(creds)
+        access_token=create_token(cred)
         service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
-        thread_id = request.get("label_id", "")
+        thread_id = request.get("thread_id", "")
 
         if not thread_id:
             raise Exception("Missing input data")
@@ -368,8 +565,24 @@ def gmail_deleteThread(access_token, API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_getThreads(access_token, API_SERVICE_NAME, API_VERSION, request):
+def gmail_getThreads(creds,API_SERVICE_NAME, API_VERSION, request):
+    """
+     Returns a list of threads,where each thread is a collection of related messages forming a conversation.
+
+    :param str api_key: Used for authentication purposes. 
+    :param dict params: contains properties to be filtered in the request
+       
+        - :scope: (str,REQUIRED) possible values are single , all .
+        - :thread_id: (str) the id of the thread to be returned 
+        - :limit: (str) Maximum number of threads to return. This field defaults to 100.
+        - :includeSpamTrash:(bool) Include threads from SPAM and TRASH in the results.
+    :return: list of returned threads.
+    :rtype: dict
+    """
+    
     try:
+        cred=json.loads(creds)
+        access_token=create_token(cred)
         service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
         scope = request.get("scope", "")
         thread_id = request.get("thread_id", "")
@@ -438,8 +651,23 @@ def gmail_getThreads(access_token, API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_removeLabelFromThread(access_token, API_SERVICE_NAME, API_VERSION, request):
+def gmail_removeLabelFromThread(creds,API_SERVICE_NAME, API_VERSION, request):
+    """
+     Removes a list of labels, which is A mechanism for organizing messages and threads, from a specific thread.
+
+    :param str access_token: (str,required) Used for authentication. 
+    :param str API_SERVICE_NAME: (str,required) for the calendar, it's 'gmail'
+    :param str API_VERSION: (str,required) the version used is v1  
+    :param dict request: contains thread and label ids 
+        - :thread_id: (str,REQUIRED) the thread id , to which the label will be added
+        - :label_ids: (str,REQUIRED) The Id of the label to be removed 
+        
+    :return: Success or failure of the operation
+    :rtype: dict
+    """
     try:
+        cred=json.loads(creds)
+        access_token=create_token(cred)
         service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
 
         thread_id = request.get("thread_id", "")
@@ -477,12 +705,41 @@ def gmail_removeLabelFromThread(access_token, API_SERVICE_NAME, API_VERSION, req
 
 
 def get_message_subject(id, service):
+    """
+     Removes a list of labels, which is A mechanism for organizing messages and threads, from a specific thread.
+
+    :param str access_token: (str,required) Used for authentication. 
+    :param str API_SERVICE_NAME: (str,required) for the calendar, it's 'gmail'
+    :param str API_VERSION: (str,required) the version used is v1  
+    :param dict request: contains thread and label ids 
+    
+        - :thread_id: (str,REQUIRED) the thread id , to which the label will be added
+        - :label_ids: (str,REQUIRED) The Id of the label to be removed 
+        
+    :return: Success or failure of the operation
+    :rtype: dict
+    """
     message = service.users().messages().get(userId="me", id=id).execute()
     print(f"in get_message_subject : {message['subject']}")
     return message["subject"]
 
 
 def forge_reply(message_id, service):
+    """
+        Sends a reply to a certain messsage in a thread 
+
+    :param str access_token: (str,required) Used for authentication. 
+    :param str API_SERVICE_NAME: (str,required) for the calendar, it's 'gmail'
+    :param str API_VERSION: (str,required) the version used is v1  
+    :param dict request: contains thread  id and related details
+    
+        - :thread_id: (str,REQUIRED) the thread id , to which the message belongs
+        
+        - :message_id: (str,REQUIRED) The id of the message to reply to
+        
+    :return: Success or failure of the operation
+    :rtype: dict
+    """
     message = service.users().messages().get(userId="me", id=message_id).execute()
     reply = {"threadId": message["threadId"]}
     for header in message["payload"]["headers"]:
@@ -493,8 +750,34 @@ def forge_reply(message_id, service):
     return reply
 
 
-def gmail_replyToThread(access_token, API_SERVICE_NAME, API_VERSION, request):
+def gmail_replyToThread(creds,API_SERVICE_NAME, API_VERSION, request):
+    """
+     Replies to a thread 
+
+    :param str access_token: (str,required) Used for authentication. 
+    :param str API_SERVICE_NAME: (str,required) for the calendar, it's 'gmail'
+    :param str API_VERSION: (str,required) the version used is v1  
+    :param dict request: contains the thread details
+    
+        - :thread_id: (str,REQUIRED) the id of the thread to reply to 
+        - :to_recipients: (arr) recipients of the message
+        - :cc_recipients: (arr) to send an email to multiple people with each recipient knowing the email details of the others.
+        - :bcc_recipients: (arr) to send an email to multiple people without each recipient knowing the email details of the others.
+        - :subject: (str) the message content 
+        - :message_body: (str)
+        - :in_reply_to: (str) the id of the message to reply to
+        - :message_snippet: (str) the message snippet 
+        - :email_type: (str) the type of the email 
+        - :attachments_list: (dict) Attachments are of two types: URL,ByteString
+                     type,name,url.
+        
+        
+    :return: Success or failure of the operation
+    :rtype: dict
+    """
     try:
+        cred=json.loads(creds)
+        access_token=create_token(cred)
         service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
         mimeMessage = MIMEMultipart()
         # Extract the request parameters
@@ -572,8 +855,24 @@ def gmail_replyToThread(access_token, API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_trashThread(access_token, API_SERVICE_NAME, API_VERSION, request):
+def gmail_trashThread(creds,API_SERVICE_NAME, API_VERSION, request):
+    """
+     Moves the specified thread to the trash. Any messages that belong to the thread are also moved to the trash.
+
+    :param str access_token: (str,required) Used for authentication. 
+    :param str API_SERVICE_NAME: (str,required) for the calendar, it's 'gmail'
+    :param str API_VERSION: (str,required) the version used is v1
+    :param dict request: contains the id of the thread to be trashed
+       
+        - :thread_id: (str,REQUIRED) The ID of the thread to be moved to trash.
+      
+        
+    :return: If successful, the response body contains an instance of Thread.
+    :rtype: dict
+    """
     try:
+        cred=json.loads(creds)
+        access_token=create_token(cred)
         thread_id = request.get("thread_id", "")
         if not thread_id:
             raise Exception("Missing input data")
@@ -587,8 +886,23 @@ def gmail_trashThread(access_token, API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_untrashThread(access_token, API_SERVICE_NAME, API_VERSION, request):
+def gmail_untrashThread(creds,API_SERVICE_NAME, API_VERSION, request):
+    """
+     Removes the specified thread from the trash. Any messages that belong to the thread are also removed from the trash.
+
+    :param str access_token: (str,required) Used for authentication. 
+    :param str API_SERVICE_NAME: (str,required) for the calendar, it's 'gmail'
+    :param str API_VERSION: (str,required) the version used is v1
+    :param dict request: contains the id of the thread to be untrashed
+       
+        - :thread_id: (str,REQUIRED) The ID of the thread to be untrashed
+      
+    :return: If successful, the response body contains an instance of Thread.
+    :rtype: dict
+    """
     try:
+        cred=json.loads(creds)
+        access_token=create_token(cred)
         thread_id = request.get("thread_id", "")
         if not thread_id:
             raise Exception("Missing input data")
@@ -605,8 +919,27 @@ def gmail_untrashThread(access_token, API_SERVICE_NAME, API_VERSION, request):
 ################################################# Label@@@ #########################################
 
 
-def gmail_createLabel(access_token, API_SERVICE_NAME, API_VERSION, request):
+def gmail_createLabel(creds,API_SERVICE_NAME, API_VERSION, request):
+    
+    """
+     Creates a label, which is A mechanism for organizing messages and threads, to a specific message.
+
+    :param str access_token: (str,required) Used for authentication. 
+    :param str API_SERVICE_NAME: (str,required) for the calendar, it's 'gmail'
+    :param str API_VERSION: (str,required) the version used is v1
+    :param dict request: contains properties to be added to the label
+       
+        - :name: (str,REQUIRED) The ID of the thread to be untrashed
+        - :labelListVisibility: (enum) The visibility of the label in the label list in the Gmail web interface.
+        - :messageListVisibility: (enum) The visibility of messages with this label 
+      
+    :return: If successful, the response body contains a newly created instance of Label.
+    :rtype: dict
+    """
+
     try:
+        cred=json.loads(creds)
+        access_token=create_token(cred)
         service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
         name = request.get("name", "")
         if not name:
@@ -627,8 +960,22 @@ def gmail_createLabel(access_token, API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_deleteLabel(access_token, API_SERVICE_NAME, API_VERSION, request):
+def gmail_deleteLabel(creds,API_SERVICE_NAME, API_VERSION, request):
+    """
+     Immediately and permanently deletes the specified label and removes it from any messages and threads that it is applied to.
+
+    :param str access_token: (str,required) Used for authentication. 
+    :param str API_SERVICE_NAME: (str,required) for the calendar, it's 'gmail'
+    :param str API_VERSION: (str,required) the version used is v1
+    :param dict request: contains the id of the label to be deleted 
+       
+        - :label_id: (str,REQUIRED) the id of the label to be deleted
+    :return: Success or failure of the deletion of the label
+    :rtype: dict
+    """
     try:
+        cred=json.loads(creds)
+        access_token=create_token(cred)
         service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
         label_id = request.get("label_id", "")
 
@@ -641,8 +988,23 @@ def gmail_deleteLabel(access_token, API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_getLabels(access_token, API_SERVICE_NAME, API_VERSION, request):
+def gmail_getLabels(creds,API_SERVICE_NAME, API_VERSION, request):
+    """
+     Lists all labels in the user's mailbox.
+
+    :param str access_token: (str,required) Used for authentication. 
+    :param str API_SERVICE_NAME: (str,required) for the calendar, it's 'gmail'
+    :param str API_VERSION: (str,required) the version used is v1
+    :param dict request: contains the id of the label to be deleted 
+       
+        - :label_id: (str,REQUIRED) the id of the label to be returned
+         - :label_id: (str,REQUIRED) the id of the label to be returned
+    :return: Success or failure of the deletion of the label
+    :rtype: dict
+    """
     try:
+        cred=json.loads(creds)
+        access_token=create_token(cred)
         service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
         scope = request.get("scope", "")
         label_id = request.get("label_id", "")
@@ -669,8 +1031,30 @@ def gmail_getLabels(access_token, API_SERVICE_NAME, API_VERSION, request):
 ################################################# Drafts## #########################################
 
 
-def gmail_createDraft(access_token, API_SERVICE_NAME, API_VERSION, request):
+def gmail_createDraft(creds,API_SERVICE_NAME, API_VERSION, request):
+    """
+     Creates a draft, which is an unsent message. A message contained within the draft can be replaced.
+
+    :param str api_key: Used for authentication purposes. 
+    :param dict params: contains properties to be added to the draft
+    
+    
+        - :subject: (str,REQUIRED) the id of the payment to be modified
+        - :to: (str,REQUIRED) the recipient email
+        - :type: (str) email type
+        - :body: (str,REQUIRED) contains the item 'enabled' (bool)
+        - :attachments_list: (dict) Attachments are of two types: URL,ByteString
+                type,name,url.
+        - :cc_recipients: (arr) to send an email to multiple people with each recipient knowing the email details of the others.
+        - :bcc_recipients: (arr) to send an email to multiple people without each recipient knowing the email details of the others.
+        
+    :return: Details about the created draft
+    :rtype: dict
+    """
+    
     try:
+        cred=json.loads(creds)
+        access_token=create_token(cred)
         service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
         mimeMessage = MIMEMultipart()
         attachments_list = None
@@ -737,8 +1121,21 @@ def gmail_createDraft(access_token, API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_deleteDraft(access_token, API_SERVICE_NAME, API_VERSION, request):
+def gmail_deleteDraft(creds,API_SERVICE_NAME, API_VERSION, request):
+    """
+     Immediately and permanently deletes the specified draft. Does not simply trash it.
+
+    :param str api_key: Used for authentication purposes. 
+    :param dict params: contains draft id to be deleted.
+    
+        - :draft_id: (str,REQUIRED) the id of the draft to be deleted.
+       
+    :return: Success / Failure of the deletion request
+    :rtype: dict
+    """
     try:
+        cred=json.loads(creds)
+        access_token=create_token(cred)
         service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
         draft_id = request.get("draft_id", "")
         if not draft_id:
@@ -750,8 +1147,22 @@ def gmail_deleteDraft(access_token, API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_getDraft(access_token, API_SERVICE_NAME, API_VERSION, request):
+def gmail_getDraft(creds,API_SERVICE_NAME, API_VERSION, request):
+    """
+     Gets the specified draft.
+
+    :param str api_key: Used for authentication purposes. 
+    :param dict params: contains draft id to be retrieved and filters
+    
+        - :draft_id: (str,REQUIRED) the id of the draft to be retrieved.
+        - :scope: (str,REQUIRED) possible values are single , all . 
+       
+    :return: If successful, the response body contains an instance of Draft.
+    :rtype: dict
+    """
     try:
+        cred=json.loads(creds)
+        access_token=create_token(cred)
         service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
         scope = request.get("scope", "")
         # Default to 100 if 'limit' is not provided

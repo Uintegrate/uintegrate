@@ -2,15 +2,30 @@ import asana
 from asana.rest import ApiException
 import json
 
+def asana_get_many_project(cred,params):
+    """
+    Get multiple projects from Asana.
 
-def asana_get_many_project(accessToken,params):
+    :param str accessToken: Access token for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+
+        - :workspace: (str,required) - The workspace gid to filter projects on.
+        - :team: (str,optional) - The team to filter projects on.
+        - :archived: (bool,optional) - Only return projects whose archived field takes on the value of this parameter.
+
+    Returns:
+      list: A list of projects retrieved from Asana.
+
+    """
     try:
-        if "workspace" in params:
+        creds=json.loads(cred)
+        if "workspace" in params and "accessToken" in creds:
+            accessToken = creds["accessToken"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
             api_client = asana.ApiClient(configuration)
             projects_api_instance = asana.ProjectsApi(api_client)
-            opts = {"opt_fields": "archived,color,completed,completed_at,completed_by,completed_by.name,created_at,created_from_template,created_from_template.name,current_status,current_status.author,current_status.author.name,current_status.color,current_status.created_at,current_status.created_by,current_status.created_by.name,current_status.html_text,current_status.modified_at,current_status.text,current_status.title,current_status_update,current_status_update.resource_subtype,current_status_update.title,custom_field_settings,custom_field_settings.custom_field,custom_field_settings.custom_field.asana_created_field,custom_field_settings.custom_field.created_by,custom_field_settings.custom_field.created_by.name,custom_field_settings.custom_field.currency_code,custom_field_settings.custom_field.custom_label,custom_field_settings.custom_field.custom_label_position,custom_field_settings.custom_field.date_value,custom_field_settings.custom_field.date_value.date,custom_field_settings.custom_field.date_value.date_time,custom_field_settings.custom_field.description,custom_field_settings.custom_field.display_value,custom_field_settings.custom_field.enabled,custom_field_settings.custom_field.enum_options,custom_field_settings.custom_field.enum_options.color,custom_field_settings.custom_field.enum_options.enabled,custom_field_settings.custom_field.enum_options.name,custom_field_settings.custom_field.enum_value,custom_field_settings.custom_field.enum_value.color,custom_field_settings.custom_field.enum_value.enabled,custom_field_settings.custom_field.enum_value.name,custom_field_settings.custom_field.format,custom_field_settings.custom_field.has_notifications_enabled,custom_field_settings.custom_field.is_formula_field,custom_field_settings.custom_field.is_global_to_workspace,custom_field_settings.custom_field.is_value_read_only,custom_field_settings.custom_field.multi_enum_values,custom_field_settings.custom_field.multi_enum_values.color,custom_field_settings.custom_field.multi_enum_values.enabled,custom_field_settings.custom_field.multi_enum_values.name,custom_field_settings.custom_field.name,custom_field_settings.custom_field.number_value,custom_field_settings.custom_field.people_value,custom_field_settings.custom_field.people_value.name,custom_field_settings.custom_field.precision,custom_field_settings.custom_field.resource_subtype,custom_field_settings.custom_field.text_value,custom_field_settings.custom_field.type,custom_field_settings.is_important,custom_field_settings.parent,custom_field_settings.parent.name,custom_field_settings.project,custom_field_settings.project.name,custom_fields,custom_fields.date_value,custom_fields.date_value.date,custom_fields.date_value.date_time,custom_fields.display_value,custom_fields.enabled,custom_fields.enum_options,custom_fields.enum_options.color,custom_fields.enum_options.enabled,custom_fields.enum_options.name,custom_fields.enum_value,custom_fields.enum_value.color,custom_fields.enum_value.enabled,custom_fields.enum_value.name,custom_fields.is_formula_field,custom_fields.multi_enum_values,custom_fields.multi_enum_values.color,custom_fields.multi_enum_values.enabled,custom_fields.multi_enum_values.name,custom_fields.name,custom_fields.number_value,custom_fields.resource_subtype,custom_fields.text_value,custom_fields.type,default_access_level,default_view,due_date,due_on,followers,followers.name,html_notes,icon,members,members.name,minimum_access_level_for_customization,minimum_access_level_for_sharing,modified_at,name,notes,offset,owner,path,permalink_url,project_brief,public,start_on,team,team.name,uri,workspace,workspace.name", }
+            opts = {}
             for key, value in params.items():
                 if value:
                     opts[key] = value
@@ -22,32 +37,59 @@ def asana_get_many_project(accessToken,params):
     except ApiException as e:
         raise Exception(json.loads(e.body))
 
+def asana_get_project(cred,params):
+    """
+    Retrieve details of a specific project from Asana based on the provided project GID.
 
-def asana_get_project(accessToken,params):
+    :param str accessToken: Access token for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :project_gid: (str,required) - Globally unique identifier for the project.
+
+    Returns:
+      dict: Details of the requested project.
+    """
+
     try:
-        if "project_gid" in params:
+        creds=json.loads(cred)
+        if "project_gid" in params and "accessToken" in creds:
+            accessToken = creds["accessToken"]
             project_gid = params["project_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
             api_client = asana.ApiClient(configuration)
             projects_api_instance = asana.ProjectsApi(api_client)
-            opts = {
-                "opt_fields": "archived,color,completed,completed_at,completed_by,completed_by.name,created_at,created_from_template,created_from_template.name,current_status,current_status.author,current_status.author.name,current_status.color,current_status.created_at,current_status.created_by,current_status.created_by.name,current_status.html_text,current_status.modified_at,current_status.text,current_status.title,current_status_update,current_status_update.resource_subtype,current_status_update.title,custom_field_settings,custom_field_settings.custom_field,custom_field_settings.custom_field.asana_created_field,custom_field_settings.custom_field.created_by,custom_field_settings.custom_field.created_by.name,custom_field_settings.custom_field.currency_code,custom_field_settings.custom_field.custom_label,custom_field_settings.custom_field.custom_label_position,custom_field_settings.custom_field.date_value,custom_field_settings.custom_field.date_value.date,custom_field_settings.custom_field.date_value.date_time,custom_field_settings.custom_field.description,custom_field_settings.custom_field.display_value,custom_field_settings.custom_field.enabled,custom_field_settings.custom_field.enum_options,custom_field_settings.custom_field.enum_options.color,custom_field_settings.custom_field.enum_options.enabled,custom_field_settings.custom_field.enum_options.name,custom_field_settings.custom_field.enum_value,custom_field_settings.custom_field.enum_value.color,custom_field_settings.custom_field.enum_value.enabled,custom_field_settings.custom_field.enum_value.name,custom_field_settings.custom_field.format,custom_field_settings.custom_field.has_notifications_enabled,custom_field_settings.custom_field.is_formula_field,custom_field_settings.custom_field.is_global_to_workspace,custom_field_settings.custom_field.is_value_read_only,custom_field_settings.custom_field.multi_enum_values,custom_field_settings.custom_field.multi_enum_values.color,custom_field_settings.custom_field.multi_enum_values.enabled,custom_field_settings.custom_field.multi_enum_values.name,custom_field_settings.custom_field.name,custom_field_settings.custom_field.number_value,custom_field_settings.custom_field.people_value,custom_field_settings.custom_field.people_value.name,custom_field_settings.custom_field.precision,custom_field_settings.custom_field.resource_subtype,custom_field_settings.custom_field.text_value,custom_field_settings.custom_field.type,custom_field_settings.is_important,custom_field_settings.parent,custom_field_settings.parent.name,custom_field_settings.project,custom_field_settings.project.name,custom_fields,custom_fields.date_value,custom_fields.date_value.date,custom_fields.date_value.date_time,custom_fields.display_value,custom_fields.enabled,custom_fields.enum_options,custom_fields.enum_options.color,custom_fields.enum_options.enabled,custom_fields.enum_options.name,custom_fields.enum_value,custom_fields.enum_value.color,custom_fields.enum_value.enabled,custom_fields.enum_value.name,custom_fields.is_formula_field,custom_fields.multi_enum_values,custom_fields.multi_enum_values.color,custom_fields.multi_enum_values.enabled,custom_fields.multi_enum_values.name,custom_fields.name,custom_fields.number_value,custom_fields.resource_subtype,custom_fields.text_value,custom_fields.type,default_access_level,default_view,due_date,due_on,followers,followers.name,html_notes,icon,members,members.name,minimum_access_level_for_customization,minimum_access_level_for_sharing,modified_at,name,notes,owner,permalink_url,project_brief,public,start_on,team,team.name,workspace,workspace.name",
-            }
+            opts = {}
             project = projects_api_instance.get_project(project_gid, opts)
-            if project:
-                return project
-            else:
-                raise Exception("Failed to fetches projects.")
+            return project
         else:
             raise Exception("Missing Input Data")
     except ApiException as e:
         raise Exception(json.loads(e.body))
 
 
-def asana_create_project(accessToken,params):
+def asana_create_project(cred,params):
+    """
+    Create a project in Asana.
+
+    :param str accessToken: Access token for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :name: (str,required) - Name of the project to be created.
+        - :workspace: (str,required) - The gid of a workspace.
+        - :team: (str,required) - The team that this project is shared with.
+        - :color: (str,optional) - Color of the project.
+        - :due_on: (date,optional) - The day on which this project is due. This takes a date with format YYYY-MM-DD.
+        - :notes: (str,optional) - Description of the project.
+
+    Returns:
+      dict: Details of the newly created project.
+
+    """
     try:
-        if "name" in params and "workspace" in params and "team" in params:
+        creds=json.loads(cred)
+        if "name" in params and "workspace" in params and "team" in params and "accessToken" in creds:
+            accessToken = creds["accessToken"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
             api_client = asana.ApiClient(configuration)
@@ -56,9 +98,7 @@ def asana_create_project(accessToken,params):
             for key, value in params.items():
                 body_data[key] = value
             body = {"data": body_data}
-            opts = {
-                "opt_fields": "archived,color,completed,completed_at,completed_by,completed_by.name,created_at,created_from_template,created_from_template.name,current_status,current_status.author,current_status.author.name,current_status.color,current_status.created_at,current_status.created_by,current_status.created_by.name,current_status.html_text,current_status.modified_at,current_status.text,current_status.title,current_status_update,current_status_update.resource_subtype,current_status_update.title,custom_field_settings,custom_field_settings.custom_field,custom_field_settings.custom_field.asana_created_field,custom_field_settings.custom_field.created_by,custom_field_settings.custom_field.created_by.name,custom_field_settings.custom_field.currency_code,custom_field_settings.custom_field.custom_label,custom_field_settings.custom_field.custom_label_position,custom_field_settings.custom_field.date_value,custom_field_settings.custom_field.date_value.date,custom_field_settings.custom_field.date_value.date_time,custom_field_settings.custom_field.description,custom_field_settings.custom_field.display_value,custom_field_settings.custom_field.enabled,custom_field_settings.custom_field.enum_options,custom_field_settings.custom_field.enum_options.color,custom_field_settings.custom_field.enum_options.enabled,custom_field_settings.custom_field.enum_options.name,custom_field_settings.custom_field.enum_value,custom_field_settings.custom_field.enum_value.color,custom_field_settings.custom_field.enum_value.enabled,custom_field_settings.custom_field.enum_value.name,custom_field_settings.custom_field.format,custom_field_settings.custom_field.has_notifications_enabled,custom_field_settings.custom_field.is_formula_field,custom_field_settings.custom_field.is_global_to_workspace,custom_field_settings.custom_field.is_value_read_only,custom_field_settings.custom_field.multi_enum_values,custom_field_settings.custom_field.multi_enum_values.color,custom_field_settings.custom_field.multi_enum_values.enabled,custom_field_settings.custom_field.multi_enum_values.name,custom_field_settings.custom_field.name,custom_field_settings.custom_field.number_value,custom_field_settings.custom_field.people_value,custom_field_settings.custom_field.people_value.name,custom_field_settings.custom_field.precision,custom_field_settings.custom_field.resource_subtype,custom_field_settings.custom_field.text_value,custom_field_settings.custom_field.type,custom_field_settings.is_important,custom_field_settings.parent,custom_field_settings.parent.name,custom_field_settings.project,custom_field_settings.project.name,custom_fields,custom_fields.date_value,custom_fields.date_value.date,custom_fields.date_value.date_time,custom_fields.display_value,custom_fields.enabled,custom_fields.enum_options,custom_fields.enum_options.color,custom_fields.enum_options.enabled,custom_fields.enum_options.name,custom_fields.enum_value,custom_fields.enum_value.color,custom_fields.enum_value.enabled,custom_fields.enum_value.name,custom_fields.is_formula_field,custom_fields.multi_enum_values,custom_fields.multi_enum_values.color,custom_fields.multi_enum_values.enabled,custom_fields.multi_enum_values.name,custom_fields.name,custom_fields.number_value,custom_fields.resource_subtype,custom_fields.text_value,custom_fields.type,default_access_level,default_view,due_date,due_on,followers,followers.name,html_notes,icon,members,members.name,minimum_access_level_for_customization,minimum_access_level_for_sharing,modified_at,name,notes,owner,permalink_url,project_brief,public,start_on,team,team.name,workspace,workspace.name",
-            }
+            opts = {}
             response = projects_api_instance.create_project(body, opts)
             return response
         else:
@@ -67,9 +107,30 @@ def asana_create_project(accessToken,params):
         raise Exception(json.loads(e.body))
 
 
-def asana_update_project(accessToken,params):
+def asana_update_project(cred,params):
+    """
+    Update an Asana project based on provided information.
+
+    :param str accessToken: Access token for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :project_gid: (str,required) - Globally unique identifier for the project.
+        - :workspace: (str,required) - The gid of a workspace.
+        - :name: (str,optional) - Name of the project .
+        - :team: (str,optional) - The team that this project is shared with.
+        - :color: (str,optional) - Color of the project.
+        - :due_on: (date,optional) - The day on which this project is due. This takes a date with format YYYY-MM-DD.
+        - :notes: (str,optional) - Description of the project.
+        - :owner: (str,optional) - The current owner of the project.
+        
+    Returns:
+      dict: Updated project information.
+
+    """
     try:
-        if "project_gid" in params and "workspace" in params:
+        creds=json.loads(cred)
+        if "project_gid" in params and "workspace" in params and "accessToken" in creds:
+            accessToken = creds["accessToken"]
             project_gid = params["project_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -83,9 +144,7 @@ def asana_update_project(accessToken,params):
                 if value:
                     body_data[key] = value
             body = {"data": body_data}
-            opts = {
-                "opt_fields": "archived,color,completed,completed_at,completed_by,completed_by.name,created_at,created_from_template,created_from_template.name,current_status,current_status.author,current_status.author.name,current_status.color,current_status.created_at,current_status.created_by,current_status.created_by.name,current_status.html_text,current_status.modified_at,current_status.text,current_status.title,current_status_update,current_status_update.resource_subtype,current_status_update.title,custom_field_settings,custom_field_settings.custom_field,custom_field_settings.custom_field.asana_created_field,custom_field_settings.custom_field.created_by,custom_field_settings.custom_field.created_by.name,custom_field_settings.custom_field.currency_code,custom_field_settings.custom_field.custom_label,custom_field_settings.custom_field.custom_label_position,custom_field_settings.custom_field.date_value,custom_field_settings.custom_field.date_value.date,custom_field_settings.custom_field.date_value.date_time,custom_field_settings.custom_field.description,custom_field_settings.custom_field.display_value,custom_field_settings.custom_field.enabled,custom_field_settings.custom_field.enum_options,custom_field_settings.custom_field.enum_options.color,custom_field_settings.custom_field.enum_options.enabled,custom_field_settings.custom_field.enum_options.name,custom_field_settings.custom_field.enum_value,custom_field_settings.custom_field.enum_value.color,custom_field_settings.custom_field.enum_value.enabled,custom_field_settings.custom_field.enum_value.name,custom_field_settings.custom_field.format,custom_field_settings.custom_field.has_notifications_enabled,custom_field_settings.custom_field.is_formula_field,custom_field_settings.custom_field.is_global_to_workspace,custom_field_settings.custom_field.is_value_read_only,custom_field_settings.custom_field.multi_enum_values,custom_field_settings.custom_field.multi_enum_values.color,custom_field_settings.custom_field.multi_enum_values.enabled,custom_field_settings.custom_field.multi_enum_values.name,custom_field_settings.custom_field.name,custom_field_settings.custom_field.number_value,custom_field_settings.custom_field.people_value,custom_field_settings.custom_field.people_value.name,custom_field_settings.custom_field.precision,custom_field_settings.custom_field.resource_subtype,custom_field_settings.custom_field.text_value,custom_field_settings.custom_field.type,custom_field_settings.is_important,custom_field_settings.parent,custom_field_settings.parent.name,custom_field_settings.project,custom_field_settings.project.name,custom_fields,custom_fields.date_value,custom_fields.date_value.date,custom_fields.date_value.date_time,custom_fields.display_value,custom_fields.enabled,custom_fields.enum_options,custom_fields.enum_options.color,custom_fields.enum_options.enabled,custom_fields.enum_options.name,custom_fields.enum_value,custom_fields.enum_value.color,custom_fields.enum_value.enabled,custom_fields.enum_value.name,custom_fields.is_formula_field,custom_fields.multi_enum_values,custom_fields.multi_enum_values.color,custom_fields.multi_enum_values.enabled,custom_fields.multi_enum_values.name,custom_fields.name,custom_fields.number_value,custom_fields.resource_subtype,custom_fields.text_value,custom_fields.type,default_access_level,default_view,due_date,due_on,followers,followers.name,html_notes,icon,members,members.name,minimum_access_level_for_customization,minimum_access_level_for_sharing,modified_at,name,notes,owner,permalink_url,project_brief,public,start_on,team,team.name,workspace,workspace.name",
-            }
+            opts = {}
             response = projects_api_instance.update_project(
                 body, project_gid, opts)
             return response
@@ -95,9 +154,23 @@ def asana_update_project(accessToken,params):
         raise Exception(json.loads(e.body))
 
 
-def asana_delete_project(accessToken,params):
+def asana_delete_project(cred,params):
+    """
+    Delete a project in Asana based on provided parameters.
+
+    :param str accessToken: Access token for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :project_gid: (str,required) - Globally unique identifier for the project.
+
+    Returns:
+      dict: A message confirming the deletion of the project.
+
+    """
     try:
-        if "project_gid" in params:
+        creds=json.loads(cred)
+        if "project_gid" in params and "accessToken" in creds:
+            accessToken = creds["accessToken"]
             project_gid = params["project_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -111,9 +184,25 @@ def asana_delete_project(accessToken,params):
         raise Exception(json.loads(e.body))
 
 
-def asana_create_project_from_template(accessToken,params):
+def asana_create_project_from_template(cred,params):
+    """
+    Create a new project in Asana based on a specified template.
+
+    :param str accessToken: Access token for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+
+        - :name: (str,required) - The name of the new project.
+        - :project_template_gid: (str,required) - Globally unique identifier for the project template.
+        - :public: (bool,optional) - Sets the project to public to its team.
+
+    Returns:
+      dict: Information about the newly created project.
+    """
     try:
-        if "project_template_gid" in params and "name" in params:
+        creds=json.loads(cred)
+        if "project_template_gid" in params and "name" in params and "accessToken" in creds:
+            accessToken = creds["accessToken"]
             project_template_gid = params["project_template_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -129,12 +218,10 @@ def asana_create_project_from_template(accessToken,params):
                     continue
                 if value:
                     body_data[key] = value
-            opts = {
-                "body": {"data": body_data},
-                "opt_fields": "new_project,new_project.name,new_project_template,new_project_template.name,new_task,new_task.created_by,new_task.name,new_task.resource_subtype,resource_subtype,status",
-            }
+            opts = {"body": {"data": body_data}}
             api_response = project_templates_api_instance.instantiate_project(
-                project_template_gid, opts)
+                project_template_gid, opts
+            )
             return api_response
         else:
             raise Exception("Missing Input Data")
@@ -142,9 +229,31 @@ def asana_create_project_from_template(accessToken,params):
         raise Exception(json.loads(e.body))
 
 
-def asana_create_task(accessToken,params):
+def asana_create_task(cred,params):
+    """
+    Create a new task in Asana
+
+    :param str accessToken: Access token for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :name: (str,required) - Name of the task to be created.
+        - :workspace: (str,required) - Gid of a workspace.
+        - :assignee: (str,optional) -   Assignee ID for the task (gid of user).
+        - :assignee_status: (str,optional) -   Assignee status for the task (Inbox, Today, Upcoming, Later).
+        - :completed: (bool,optional) - Indicates if the task is completed or not.
+        - :liked: (bool,optional) - Indicates if the task is liked or not.
+        - :due_on: (date,optional) - Due date of the task (format: YYYY-MM-DD or null).
+        - :notes: (str,optional) - Description of the task.
+        - :projects: (array , optional) - Array of project IDs where the task will be added.
+
+    Returns:
+      dict: Information about the created task.
+
+    """
     try:
-        if "name" in params and "workspace" in params:
+        creds=json.loads(cred)
+        if "name" in params and "workspace" in params and "accessToken" in creds:
+            accessToken = creds["accessToken"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
             api_client = asana.ApiClient(configuration)
@@ -154,9 +263,7 @@ def asana_create_task(accessToken,params):
                 if value:
                     body_data[key] = value
             body = {"data": body_data}
-            opts = {
-                "opt_fields": "actual_time_minutes,approval_status,assignee,assignee.name,assignee_section,assignee_section.name,assignee_status,completed,completed_at,completed_by,completed_by.name,created_at,created_by,custom_fields,custom_fields.asana_created_field,custom_fields.created_by,custom_fields.created_by.name,custom_fields.currency_code,custom_fields.custom_label,custom_fields.custom_label_position,custom_fields.date_value,custom_fields.date_value.date,custom_fields.date_value.date_time,custom_fields.description,custom_fields.display_value,custom_fields.enabled,custom_fields.enum_options,custom_fields.enum_options.color,custom_fields.enum_options.enabled,custom_fields.enum_options.name,custom_fields.enum_value,custom_fields.enum_value.color,custom_fields.enum_value.enabled,custom_fields.enum_value.name,custom_fields.format,custom_fields.has_notifications_enabled,custom_fields.is_formula_field,custom_fields.is_global_to_workspace,custom_fields.is_value_read_only,custom_fields.multi_enum_values,custom_fields.multi_enum_values.color,custom_fields.multi_enum_values.enabled,custom_fields.multi_enum_values.name,custom_fields.name,custom_fields.number_value,custom_fields.people_value,custom_fields.people_value.name,custom_fields.precision,custom_fields.resource_subtype,custom_fields.text_value,custom_fields.type,dependencies,dependents,due_at,due_on,external,external.data,followers,followers.name,hearted,hearts,hearts.user,hearts.user.name,html_notes,is_rendered_as_separator,liked,likes,likes.user,likes.user.name,memberships,memberships.project,memberships.project.name,memberships.section,memberships.section.name,modified_at,name,notes,num_hearts,num_likes,num_subtasks,parent,parent.created_by,parent.name,parent.resource_subtype,permalink_url,projects,projects.name,resource_subtype,start_at,start_on,tags,tags.name,workspace,workspace.name",
-            }
+            opts = {}
             api_response = tasks_api_instance.create_task(body, opts)
             return api_response
         else:
@@ -165,17 +272,28 @@ def asana_create_task(accessToken,params):
         raise Exception(json.loads(e.body))
 
 
-def asana_get_task(accessToken,params):
+def asana_get_task(cred,params):
+    """
+    Retrieve details of a specific task from Asana based on the provided task GID.
+
+    :param str accessToken: Access token for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :task_gid: (str,required) - Globally unique identifier for the task.
+
+    Returns:
+      dict: Details of the retrieved task.
+    """
     try:
-        if "task_gid" in params:
+        creds=json.loads(cred)
+        if "task_gid" in params and "accessToken" in creds:
+            accessToken = creds["accessToken"]
             task_gid = params["task_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
             api_client = asana.ApiClient(configuration)
             tasks_api_instance = asana.TasksApi(api_client)
-            opts = {
-                "opt_fields": "actual_time_minutes,approval_status,assignee,assignee.name,assignee_section,assignee_section.name,assignee_status,completed,completed_at,completed_by,completed_by.name,created_at,created_by,custom_fields,custom_fields.asana_created_field,custom_fields.created_by,custom_fields.created_by.name,custom_fields.currency_code,custom_fields.custom_label,custom_fields.custom_label_position,custom_fields.date_value,custom_fields.date_value.date,custom_fields.date_value.date_time,custom_fields.description,custom_fields.display_value,custom_fields.enabled,custom_fields.enum_options,custom_fields.enum_options.color,custom_fields.enum_options.enabled,custom_fields.enum_options.name,custom_fields.enum_value,custom_fields.enum_value.color,custom_fields.enum_value.enabled,custom_fields.enum_value.name,custom_fields.format,custom_fields.has_notifications_enabled,custom_fields.is_formula_field,custom_fields.is_global_to_workspace,custom_fields.is_value_read_only,custom_fields.multi_enum_values,custom_fields.multi_enum_values.color,custom_fields.multi_enum_values.enabled,custom_fields.multi_enum_values.name,custom_fields.name,custom_fields.number_value,custom_fields.people_value,custom_fields.people_value.name,custom_fields.precision,custom_fields.resource_subtype,custom_fields.text_value,custom_fields.type,dependencies,dependents,due_at,due_on,external,external.data,followers,followers.name,hearted,hearts,hearts.user,hearts.user.name,html_notes,is_rendered_as_separator,liked,likes,likes.user,likes.user.name,memberships,memberships.project,memberships.project.name,memberships.section,memberships.section.name,modified_at,name,notes,num_hearts,num_likes,num_subtasks,parent,parent.created_by,parent.name,parent.resource_subtype,permalink_url,projects,projects.name,resource_subtype,start_at,start_on,tags,tags.name,workspace,workspace.name",
-            }
+            opts = {}
             api_response = tasks_api_instance.get_task(task_gid, opts)
             return api_response
         else:
@@ -184,26 +302,70 @@ def asana_get_task(accessToken,params):
         raise Exception(json.loads(e.body))
 
 
-def asana_get_many_task(accessToken,params):
+def asana_get_many_task(cred,params):
+    """
+    Retrieve multiple tasks from Asana based on specified parameters.
+
+    :param str accessToken: Access token for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :assignee: (str,optional) - The assignee to filter tasks on.*Note: If you specify `assignee`, you must also specify the `workspace` to filter on.*
+        - :project: (str,optional) - The project to filter tasks on.
+        - :section: (str,optional) - The section to filter tasks on.
+        - :workspace: (str,optional) - The workspace to filter tasks on.
+            *Note: If you specify `workspace`, you must also specify the `assignee` to filter on.*
+        - :completed_since: (datetime,optional) - Only return tasks that are either incomplete or that have been completed since this time. 
+        - :modified_since: (datetime,optional) - Only return tasks that have been modified since the given time. 
+
+    Returns:
+      list: List of tasks retrieved.
+    """
+
     try:
-        configuration = asana.Configuration()
-        configuration.access_token = accessToken
-        api_client = asana.ApiClient(configuration)
-        tasks_api_instance = asana.TasksApi(api_client)
-        opts = {"opt_fields": "actual_time_minutes,approval_status,assignee,assignee.name,assignee_section,assignee_section.name,assignee_status,completed,completed_at,completed_by,completed_by.name,created_at,created_by,custom_fields,custom_fields.asana_created_field,custom_fields.created_by,custom_fields.created_by.name,custom_fields.currency_code,custom_fields.custom_label,custom_fields.custom_label_position,custom_fields.date_value,custom_fields.date_value.date,custom_fields.date_value.date_time,custom_fields.description,custom_fields.display_value,custom_fields.enabled,custom_fields.enum_options,custom_fields.enum_options.color,custom_fields.enum_options.enabled,custom_fields.enum_options.name,custom_fields.enum_value,custom_fields.enum_value.color,custom_fields.enum_value.enabled,custom_fields.enum_value.name,custom_fields.format,custom_fields.has_notifications_enabled,custom_fields.is_formula_field,custom_fields.is_global_to_workspace,custom_fields.is_value_read_only,custom_fields.multi_enum_values,custom_fields.multi_enum_values.color,custom_fields.multi_enum_values.enabled,custom_fields.multi_enum_values.name,custom_fields.name,custom_fields.number_value,custom_fields.people_value,custom_fields.people_value.name,custom_fields.precision,custom_fields.resource_subtype,custom_fields.text_value,custom_fields.type,dependencies,dependents,due_at,due_on,external,external.data,followers,followers.name,hearted,hearts,hearts.user,hearts.user.name,html_notes,is_rendered_as_separator,liked,likes,likes.user,likes.user.name,memberships,memberships.project,memberships.project.name,memberships.section,memberships.section.name,modified_at,name,notes,num_hearts,num_likes,num_subtasks,offset,parent,parent.created_by,parent.name,parent.resource_subtype,path,permalink_url,projects,projects.name,resource_subtype,start_at,start_on,tags,tags.name,uri,workspace,workspace.name", }
-        for key, value in params.items():
-            if value:
-                opts[key] = value
-        api_response = tasks_api_instance.get_tasks(opts)
-        tasks = list(api_response)
-        return tasks
+        creds=json.loads(cred)
+        if "accessToken" in creds:
+            accessToken = creds["accessToken"]
+            configuration = asana.Configuration()
+            configuration.access_token = accessToken
+            api_client = asana.ApiClient(configuration)
+            tasks_api_instance = asana.TasksApi(api_client)
+            opts = {}
+            for key, value in params.items():
+                if value:
+                    opts[key] = value
+            api_response = tasks_api_instance.get_tasks(opts)
+            tasks = list(api_response)
+            return tasks
+        else:
+            raise Exception("Missing Input Data")
     except ApiException as e:
         raise Exception(json.loads(e.body))
 
 
-def asana_update_task(accessToken,params):
+def asana_update_task(cred,params):
+    """
+    Update an Asana task based on provided information.
+
+    :param str accessToken: Access token for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+
+        - :task_gid: (str,required) - Globally unique identifier for the task.
+        - :name: (str,optional) - Name of the task to be updated.
+        - :assignee: (str,optional) - Assignee ID for the task (gid of user).
+        - :assignee_status: (str,optional) - Assignee status for the task (Inbox, Today, Upcoming, Later).
+        - :completed: (bool,optional) - Indicates if the task is completed or not.
+        - :liked: (bool,optional) - Indicates if the task is liked or not.
+        - :due_on: (date,optional) : Due date of the task (format: YYYY-MM-DD or null).
+        - :notes: (str,optional) - Description of the task.
+
+    Returns:
+        dict: Updated task information.
+
+    """
     try:
-        if "task_gid" in params:
+        creds=json.loads(cred)
+        if "task_gid" in params and "accessToken" in creds:
+            accessToken = creds["accessToken"]
             task_gid = params["task_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -217,9 +379,7 @@ def asana_update_task(accessToken,params):
                 if value:
                     body_data[key] = value
             body = {"data": body_data}
-            opts = {
-                "opt_fields": "archived,color,completed,completed_at,completed_by,completed_by.name,created_at,created_from_template,created_from_template.name,current_status,current_status.author,current_status.author.name,current_status.color,current_status.created_at,current_status.created_by,current_status.created_by.name,current_status.html_text,current_status.modified_at,current_status.text,current_status.title,current_status_update,current_status_update.resource_subtype,current_status_update.title,custom_field_settings,custom_field_settings.custom_field,custom_field_settings.custom_field.asana_created_field,custom_field_settings.custom_field.created_by,custom_field_settings.custom_field.created_by.name,custom_field_settings.custom_field.currency_code,custom_field_settings.custom_field.custom_label,custom_field_settings.custom_field.custom_label_position,custom_field_settings.custom_field.date_value,custom_field_settings.custom_field.date_value.date,custom_field_settings.custom_field.date_value.date_time,custom_field_settings.custom_field.description,custom_field_settings.custom_field.display_value,custom_field_settings.custom_field.enabled,custom_field_settings.custom_field.enum_options,custom_field_settings.custom_field.enum_options.color,custom_field_settings.custom_field.enum_options.enabled,custom_field_settings.custom_field.enum_options.name,custom_field_settings.custom_field.enum_value,custom_field_settings.custom_field.enum_value.color,custom_field_settings.custom_field.enum_value.enabled,custom_field_settings.custom_field.enum_value.name,custom_field_settings.custom_field.format,custom_field_settings.custom_field.has_notifications_enabled,custom_field_settings.custom_field.is_formula_field,custom_field_settings.custom_field.is_global_to_workspace,custom_field_settings.custom_field.is_value_read_only,custom_field_settings.custom_field.multi_enum_values,custom_field_settings.custom_field.multi_enum_values.color,custom_field_settings.custom_field.multi_enum_values.enabled,custom_field_settings.custom_field.multi_enum_values.name,custom_field_settings.custom_field.name,custom_field_settings.custom_field.number_value,custom_field_settings.custom_field.people_value,custom_field_settings.custom_field.people_value.name,custom_field_settings.custom_field.precision,custom_field_settings.custom_field.resource_subtype,custom_field_settings.custom_field.text_value,custom_field_settings.custom_field.type,custom_field_settings.is_important,custom_field_settings.parent,custom_field_settings.parent.name,custom_field_settings.project,custom_field_settings.project.name,custom_fields,custom_fields.date_value,custom_fields.date_value.date,custom_fields.date_value.date_time,custom_fields.display_value,custom_fields.enabled,custom_fields.enum_options,custom_fields.enum_options.color,custom_fields.enum_options.enabled,custom_fields.enum_options.name,custom_fields.enum_value,custom_fields.enum_value.color,custom_fields.enum_value.enabled,custom_fields.enum_value.name,custom_fields.is_formula_field,custom_fields.multi_enum_values,custom_fields.multi_enum_values.color,custom_fields.multi_enum_values.enabled,custom_fields.multi_enum_values.name,custom_fields.name,custom_fields.number_value,custom_fields.resource_subtype,custom_fields.text_value,custom_fields.type,default_access_level,default_view,due_date,due_on,followers,followers.name,html_notes,icon,members,members.name,minimum_access_level_for_customization,minimum_access_level_for_sharing,modified_at,name,notes,owner,permalink_url,project_brief,public,start_on,team,team.name,workspace,workspace.name",
-            }
+            opts = {}
             api_response = tasks_api_instance.update_task(body, task_gid, opts)
             return api_response
         else:
@@ -228,9 +388,23 @@ def asana_update_task(accessToken,params):
         raise Exception(json.loads(e.body))
 
 
-def asana_delete_task(accessToken,params):
+def asana_delete_task(cred,params):
+    """
+    Delete a task in Asana based on provided parameters.
+
+    :param str accessToken: Access token for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        :task_gid: (str,required) - Globally unique identifier for the task.
+
+    Returns:
+      dict: A message confirming the deletion of the task.
+
+    """
     try:
-        if "task_gid" in params:
+        creds=json.loads(cred)
+        if "task_gid" in params and "accessToken" in creds:
+            accessToken = creds["accessToken"]
             task_gid = params["task_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -244,18 +418,30 @@ def asana_delete_task(accessToken,params):
         raise Exception(json.loads(e.body))
 
 
-def asana_search_task(accessToken,params):
+def asana_search_task(cred,params):
+    """
+    Search for tasks in Asana based on specified parameters.
+
+    :param str accessToken: Access token for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :workspace_gid: (str,required) - Globally unique identifier for the workspace or organization.
+        - :text: (str,optional) - Performs full-text search on both task name and description
+        - :completed: (bool,optional) - Filter to completed tasks
+
+    Returns:
+        list: List of tasks matching the search query.
+    """
     try:
-        if "workspace_gid" in params:
+        creds=json.loads(cred)
+        if "workspace_gid" in params and "accessToken" in creds:
+            accessToken = creds["accessToken"]
             workspace_gid = params["workspace_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
             api_client = asana.ApiClient(configuration)
             tasks_api_instance = asana.TasksApi(api_client)
-            opts = {
-                "opt_fields": "actual_time_minutes,approval_status,assignee,assignee.name,assignee_section,assignee_section.name,assignee_status,completed,completed_at,completed_by,completed_by.name,created_at,created_by,custom_fields,custom_fields.asana_created_field,custom_fields.created_by,custom_fields.created_by.name,custom_fields.currency_code,custom_fields.custom_label,custom_fields.custom_label_position,custom_fields.date_value,custom_fields.date_value.date,custom_fields.date_value.date_time,custom_fields.description,custom_fields.display_value,custom_fields.enabled,custom_fields.enum_options,custom_fields.enum_options.color,custom_fields.enum_options.enabled,custom_fields.enum_options.name,custom_fields.enum_value,custom_fields.enum_value.color,custom_fields.enum_value.enabled,custom_fields.enum_value.name,custom_fields.format,custom_fields.has_notifications_enabled,custom_fields.is_formula_field,custom_fields.is_global_to_workspace,custom_fields.is_value_read_only,custom_fields.multi_enum_values,custom_fields.multi_enum_values.color,custom_fields.multi_enum_values.enabled,custom_fields.multi_enum_values.name,custom_fields.name,custom_fields.number_value,custom_fields.people_value,custom_fields.people_value.name,custom_fields.precision,custom_fields.resource_subtype,custom_fields.text_value,custom_fields.type,dependencies,dependents,due_at,due_on,external,external.data,followers,followers.name,hearted,hearts,hearts.user,hearts.user.name,html_notes,is_rendered_as_separator,liked,likes,likes.user,likes.user.name,memberships,memberships.project,memberships.project.name,memberships.section,memberships.section.name,modified_at,name,notes,num_hearts,num_likes,num_subtasks,parent,parent.created_by,parent.name,parent.resource_subtype,permalink_url,projects,projects.name,resource_subtype,start_at,start_on,tags,tags.name,workspace,workspace.name",
-                "completed": False
-            }
+            opts = {"completed": False}
             for key, value in params.items():
                 skip_keys = ["workspace_gid"]
                 if key in skip_keys:
@@ -263,7 +449,8 @@ def asana_search_task(accessToken,params):
                 if value:
                     opts[key] = value
             api_response = tasks_api_instance.search_tasks_for_workspace(
-                workspace_gid, opts)
+                workspace_gid, opts
+            )
             tasks = list(api_response)
             return tasks
         else:
@@ -272,9 +459,26 @@ def asana_search_task(accessToken,params):
         raise Exception(json.loads(e.body))
 
 
-def asana_duplicate_task(accessToken,params):
+def asana_duplicate_task(cred,params):
+    """
+    Duplicate a task in Asana.
+
+    :param str accessToken: Access token for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :task_gid: (str,required) - Globally unique identifier for the task to be duplicated.
+        - :name: (str,required) - Name for the new duplicated task.
+        - :include: (str,optional) - A comma-separated list of fields to be duplicated to the new task . 
+
+            Available options for 'include' fields: assignee-attachments-dates-dependencies-followers-notes-parent-projects-subtasks-tags
+
+    Returns:
+        dict: Details of the duplicated task.
+    """
     try:
-        if "task_gid" in params and "name" in params:
+        creds=json.loads(cred)
+        if "task_gid" in params and "name" in params and "accessToken" in creds:
+            accessToken = creds["accessToken"]
             task_gid = params["task_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -285,9 +489,7 @@ def asana_duplicate_task(accessToken,params):
                 if value:
                     body_data[key] = value
             body = {"data": body_data}
-            opts = {
-                "opt_fields": "new_project,new_project.name,new_project_template,new_project_template.name,new_task,new_task.created_by,new_task.name,new_task.resource_subtype,resource_subtype,status",
-            }
+            opts = {}
             api_response = tasks_api_instance.duplicate_task(
                 body, task_gid, opts)
             return api_response
@@ -297,16 +499,30 @@ def asana_duplicate_task(accessToken,params):
         raise Exception(json.loads(e.body))
 
 
-def asana_upload_file_task(accessToken,params):
+def asana_upload_file_task(cred,params):
+    """
+    Upload a file to a task.
+
+    :param str accessToken: Access token for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :parent: (str,required) - Identifier of the parent task,
+        - :url: (str,required) - The URL of the external resource being attached. 
+        - :name: (str,required) - The name of the external resource being attached.
+
+    Returns:
+        dict: Details of the uploaded file attachment.
+    """
     try:
-        if "parent" in params and "url" in params and "name" in params:
+        creds=json.loads(cred)
+        if "parent" in params and "url" in params and "name" in params and "accessToken" in creds:
+            accessToken = creds["accessToken"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
             api_client = asana.ApiClient(configuration)
             attachments_api_instance = asana.AttachmentsApi(api_client)
             opts = {
                 "resource_subtype": "external",
-                "opt_fields": "connected_to_app,created_at,download_url,host,name,parent,parent.created_by,parent.name,parent.resource_subtype,permanent_url,resource_subtype,size,view_url",
             }
             for key, value in params.items():
                 if value:
@@ -320,26 +536,50 @@ def asana_upload_file_task(accessToken,params):
         raise Exception(json.loads(e.body))
 
 
-def asana_get_user(accessToken,params):
+def asana_get_user(cred,params):
+    """
+    Retrieve details of a user from Asana
+
+    :param str accessToken: Access token for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :user_gid: (str,required) - Globally unique identifier for the user.
+
+    Returns:
+        dict: Details of the user.
+    """
     try:
-        if "user_gid" in params:
+        creds=json.loads(cred)
+        if "user_gid" in params and "accessToken" in creds:
+            accessToken = creds["accessToken"]
             user_gid = params["user_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
             api_client = asana.ApiClient(configuration)
             users_api_instance = asana.UsersApi(api_client)
-            opts = {
-                "opt_fields": "email,name,photo,photo.image_1024x1024,photo.image_128x128,photo.image_21x21,photo.image_27x27,photo.image_36x36,photo.image_60x60,workspaces,workspaces.name",
-            }
+            opts = {}
             api_response = users_api_instance.get_user(user_gid, opts)
             return api_response
     except ApiException as e:
         raise Exception(json.loads(e.body))
 
 
-def asana_get_many_user(accessToken,params):
+def asana_get_many_user(cred,params):
+    """
+    Retrieve multiple users from Asana within a specified workspace.
+
+    :param str accessToken: Access token for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :workspace_gid: (str,required) - Globally unique identifier for the workspace or organization.
+
+    Returns:
+        list: List of users within the specified workspace.
+    """
     try:
-        if "workspace_gid" in params:
+        creds=json.loads(cred)
+        if "workspace_gid" in params and "accessToken" in creds:
+            accessToken = creds["accessToken"]
             workspace_gid = params["workspace_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -355,10 +595,25 @@ def asana_get_many_user(accessToken,params):
     except ApiException as e:
         raise Exception(json.loads(e.body))
 
+def asana_create_section_project(cred,params):
+    """
+    Create a section within a project in Asana.
 
-def asana_create_section_project(accessToken,params):
+    :param str accessToken: Access token for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :project_gid: (str,required) - Globally unique identifier for the project.
+        - :name: (str,required) - Name for the new section.
+        - :insert_before: (str,optional) - An existing section within this project before which the added section should be inserted.
+        - :insert_after: (str,optional) - An existing section within this project after which the added section should be inserted. Cannot be provided together with insert_before.
+
+    Returns:
+        dict: Details of the created section.
+    """
     try:
-        if "project_gid" in params and "name" in params:
+        creds=json.loads(cred)
+        if "project_gid" in params and "name" in params and "accessToken" in creds:
+            accessToken = creds["accessToken"]
             project_gid = params["project_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -373,7 +628,6 @@ def asana_create_section_project(accessToken,params):
                     body_data[key] = value
             opts = {
                 "body": {"data": body_data},
-                "opt_fields": "created_at,name,project,project.name,projects,projects.name",
             }
             api_response = sections_api_instance.create_section_for_project(
                 project_gid, opts)
@@ -383,18 +637,28 @@ def asana_create_section_project(accessToken,params):
     except ApiException as e:
         raise Exception(json.loads(e.body))
 
+def asana_get_section_project(cred,params):
+    """
+    Retrieve sections within a project in Asana
 
-def asana_get_section_project(accessToken,params):
+    :param str accessToken: Access token for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+     
+        - :project_gid: (str,required) - Globally unique identifier for the project.
+
+    Returns:
+        list: List of sections within the specified project.
+    """
     try:
-        if "project_gid" in params:
+        creds=json.loads(cred)
+        if "project_gid" in params and "accessToken" in creds:
+            accessToken = creds["accessToken"]
             project_gid = params["project_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
             api_client = asana.ApiClient(configuration)
             sections_api_instance = asana.SectionsApi(api_client)
-            opts = {
-                "opt_fields": "created_at,name,offset,path,project,project.name,projects,projects.name,uri",
-            }
+            opts = {}
             api_response = sections_api_instance.get_sections_for_project(
                 project_gid, opts)
             sections = list(api_response)
@@ -403,11 +667,25 @@ def asana_get_section_project(accessToken,params):
             raise Exception("Missing Input Data")
     except ApiException as e:
         raise Exception(json.loads(e.body))
+    
 
+def asana_move_task_to_section(cred,params):
+    """
+    Move a task to a specific section within a project in Asana.
 
-def asana_move_task_to_section(accessToken,params):
+    :param str accessToken: Access token for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :section_gid: (str,required) - Globally unique identifier for the section.
+        - :task: (str,required) - The task to add to this section.
+             
+    Returns:
+        dict: A message confirming the moving of the task.
+    """
     try:
-        if "section_gid" in params and "task" in params:
+        creds=json.loads(cred)
+        if "section_gid" in params and "task" in params and "accessToken" in creds:
+            accessToken = creds["accessToken"]
             section_gid = params["section_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -429,11 +707,28 @@ def asana_move_task_to_section(accessToken,params):
             raise Exception("Missing Input Data")
     except ApiException as e:
         raise Exception(json.loads(e.body))
+    
 
+def asana_add_project_for_task(cred,params):
+    """
+    Add a project to a task in Asana.
 
-def asana_add_project_for_task(accessToken,params):
+    :param str accessToken: Access token for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :task_gid: (str,required) - Globally unique identifier for the task.
+        - :project: (str,required) - The project to add the task to.
+        - :section: (str,optional) - A section in the project to insert the task into
+        - :insert_after: (str,optional) - A task in the project to insert the task after.
+        - :insert_before: (str,optional) - A task in the project to insert the task before.
+
+    Returns:
+        dict: A message confirming the addition of the project to the task.
+    """
     try:
-        if "task_gid" in params and "project" in params:
+        creds=json.loads(cred)
+        if "task_gid" in params and "project" in params and "accessToken" in creds:
+            accessToken = creds["accessToken"]
             insert_after = params.get("insert_after")
             insert_before = params.get("insert_before")
             section = params.get("section")
@@ -464,9 +759,24 @@ def asana_add_project_for_task(accessToken,params):
         raise Exception(json.loads(e.body))
 
 
-def asana_remove_project_for_task(accessToken,params):
+def asana_remove_project_for_task(cred,params):
+    """
+    Remove a project from a task in Asana.
+
+    :param str accessToken: Access token for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :task_gid: (str,required) - Globally unique identifier for the task.
+        - :project: (str,required) - The project to remove the task from.
+
+    Returns:
+        dict: A message confirming the removal of the project from the task.
+   
+    """
     try:
-        if "task_gid" in params and "project" in params:
+        creds=json.loads(cred)
+        if "task_gid" in params and "project" in params and "accessToken" in creds:
+            accessToken = creds["accessToken"]
             task_gid = params["task_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -488,17 +798,29 @@ def asana_remove_project_for_task(accessToken,params):
         raise Exception(json.loads(e.body))
 
 
-def asana_get_tasks_for_project(accessToken,params):
+def asana_get_tasks_for_project(cred,params):
+    """
+    Retrieve tasks associated with a specific project in Asana
+
+    :param str accessToken: Access token for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :project_gid: (str,required) - Globally unique identifier for the project.
+        - :completed_since: (datetime,optional) - Only return tasks that are either incomplete or that have been completed since this time. 
+        
+    Returns:
+        list: List of tasks associated with the specified project.
+    """
     try:
-        if "project_gid" in params:
+        creds=json.loads(cred)
+        if "project_gid" in params and "accessToken" in creds:
+            accessToken = creds["accessToken"]
             project_gid = params["project_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
             api_client = asana.ApiClient(configuration)
             tasks_api_instance = asana.TasksApi(api_client)
-            opts = {
-                "opt_fields": "actual_time_minutes,approval_status,assignee,assignee.name,assignee_section,assignee_section.name,assignee_status,completed,completed_at,completed_by,completed_by.name,created_at,created_by,followers,followers.name,html_notes,liked,likes,memberships,memberships.project,memberships.project.name,memberships.section,memberships.section.name,modified_at,name,notes,num_hearts,num_likes,num_subtasks,offset,parent,parent.created_by,parent.name,parent.resource_subtype,path,permalink_url,projects,projects.name,resource_subtype,start_at,start_on,tags,tags.name,uri,workspace,workspace.name",
-            }
+            opts = {}
             for key, value in params.items():
                 skip_keys = ["project_gid"]
                 if key in skip_keys:
@@ -515,9 +837,31 @@ def asana_get_tasks_for_project(accessToken,params):
         raise Exception(json.loads(e.body))
 
 
-def asana_create_subtask(accessToken,params):
+def asana_create_subtask(cred,params):
+    """
+    Create a new subtask in Asana
+
+    :param str accessToken: Access token for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :task_gid: (str,required) - Globally unique identifier for the task.
+        - :name: (str,required) - Name of the task.
+        - :workspace: (str,required) - Gid of a workspace.
+        - :assignee: (str,optional) - Gid of a user.
+        - :assignee_status: (str,optional) - Assignee status for the task (Inbox, Today, Upcoming, Later).
+        - :completed: (bool,optional) - Indicates if the task is completed or not.
+        - :liked: (bool,optional) - Indicates if the task is liked or not.
+        - :due_on: (date,optional) - Due date of the task (format: YYYY-MM-DD or null).
+        - :notes: (str,optional) - Description of the task.
+
+    Returns:
+      dict: Information about the created subtask.
+
+    """
     try:
-        if "task_gid" in params and "name" in params:
+        creds=json.loads(cred)
+        if "task_gid" in params and "name" in params and "accessToken" in creds:
+            accessToken = creds["accessToken"]
             task_gid = params["task_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -531,9 +875,7 @@ def asana_create_subtask(accessToken,params):
                 if value:
                     body_data[key] = value
             body = {"data": body_data}
-            opts = {
-                "opt_fields": "actual_time_minutes,approval_status,assignee,assignee.name,assignee_section,assignee_section.name,assignee_status,completed,completed_at,completed_by,completed_by.name,created_at,created_by,custom_fields,custom_fields.asana_created_field,custom_fields.created_by,custom_fields.created_by.name,custom_fields.currency_code,custom_fields.custom_label,custom_fields.custom_label_position,custom_fields.date_value,custom_fields.date_value.date,custom_fields.date_value.date_time,custom_fields.description,custom_fields.display_value,custom_fields.enabled,custom_fields.enum_options,custom_fields.enum_options.color,custom_fields.enum_options.enabled,custom_fields.enum_options.name,custom_fields.enum_value,custom_fields.enum_value.color,custom_fields.enum_value.enabled,custom_fields.enum_value.name,custom_fields.format,custom_fields.has_notifications_enabled,custom_fields.is_formula_field,custom_fields.is_global_to_workspace,custom_fields.is_value_read_only,custom_fields.multi_enum_values,custom_fields.multi_enum_values.color,custom_fields.multi_enum_values.enabled,custom_fields.multi_enum_values.name,custom_fields.name,custom_fields.number_value,custom_fields.people_value,custom_fields.people_value.name,custom_fields.precision,custom_fields.resource_subtype,custom_fields.text_value,custom_fields.type,dependencies,dependents,due_at,due_on,external,external.data,followers,followers.name,hearted,hearts,hearts.user,hearts.user.name,html_notes,is_rendered_as_separator,liked,likes,likes.user,likes.user.name,memberships,memberships.project,memberships.project.name,memberships.section,memberships.section.name,modified_at,name,notes,num_hearts,num_likes,num_subtasks,parent,parent.created_by,parent.name,parent.resource_subtype,permalink_url,projects,projects.name,resource_subtype,start_at,start_on,tags,tags.name,workspace,workspace.name",
-            }
+            opts = {}
             api_response = tasks_api_instance.create_subtask_for_task(
                 body, task_gid, opts)
             return api_response
@@ -541,19 +883,29 @@ def asana_create_subtask(accessToken,params):
             raise Exception("Missing Input Data")
     except ApiException as e:
         raise Exception(json.loads(e.body))
+    
+def asana_get_many_subtask(cred,params):
+    """
+    Retrieve subtasks of a task in Asana.
 
+    :param str accessToken: Access token for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :task_gid: (str,required) - Globally unique identifier for the task.
 
-def asana_get_many_subtask(accessToken,params):
+    Returns:
+        list: List of subtasks belonging to the specified task.
+    """
     try:
-        if "task_gid" in params:
+        creds=json.loads(cred)
+        if "task_gid" in params and "accessToken" in creds:
+            accessToken = creds["accessToken"]
             task_gid = params["task_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
             api_client = asana.ApiClient(configuration)
             tasks_api_instance = asana.TasksApi(api_client)
-            opts = {
-                "opt_fields": "actual_time_minutes,approval_status,assignee,assignee.name,assignee_section,assignee_section.name,assignee_status,completed,completed_at,completed_by,completed_by.name,created_at,created_by,custom_fields,custom_fields.asana_created_field,custom_fields.created_by,custom_fields.created_by.name,custom_fields.currency_code,custom_fields.custom_label,custom_fields.custom_label_position,custom_fields.date_value,custom_fields.date_value.date,custom_fields.date_value.date_time,custom_fields.description,custom_fields.display_value,custom_fields.enabled,custom_fields.enum_options,custom_fields.enum_options.color,custom_fields.enum_options.enabled,custom_fields.enum_options.name,custom_fields.enum_value,custom_fields.enum_value.color,custom_fields.enum_value.enabled,custom_fields.enum_value.name,custom_fields.format,custom_fields.has_notifications_enabled,custom_fields.is_formula_field,custom_fields.is_global_to_workspace,custom_fields.is_value_read_only,custom_fields.multi_enum_values,custom_fields.multi_enum_values.color,custom_fields.multi_enum_values.enabled,custom_fields.multi_enum_values.name,custom_fields.name,custom_fields.number_value,custom_fields.people_value,custom_fields.people_value.name,custom_fields.precision,custom_fields.resource_subtype,custom_fields.text_value,custom_fields.type,dependencies,dependents,due_at,due_on,external,external.data,followers,followers.name,hearted,hearts,hearts.user,hearts.user.name,html_notes,is_rendered_as_separator,liked,likes,likes.user,likes.user.name,memberships,memberships.project,memberships.project.name,memberships.section,memberships.section.name,modified_at,name,notes,num_hearts,num_likes,num_subtasks,offset,parent,parent.created_by,parent.name,parent.resource_subtype,path,permalink_url,projects,projects.name,resource_subtype,start_at,start_on,tags,tags.name,uri,workspace,workspace.name",
-            }
+            opts = {}
             api_response = tasks_api_instance.get_subtasks_for_task(
                 task_gid, opts)
             subtasks = list(api_response)
@@ -563,10 +915,25 @@ def asana_get_many_subtask(accessToken,params):
     except ApiException as e:
         raise Exception(json.loads(e.body))
 
+def asana_add_task_comment(cred,params):
+    """
+    Add a comment to a task in Asana.
 
-def asana_add_task_comment(accessToken,params):
+    :param str accessToken: Access token for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :task_gid: (str,required) - Globally unique identifier for the task.
+        - :text: (str,optional) - The plain text of the comment to add.
+        - :html_text: (str,optional) - HTML formatted text for a comment. e.g <body>This is a comment.</body> 
+        - :is_pinned: (bool,optional) - Conditional. Whether the story should be pinned on the resource.
+
+    Returns:
+        dict: Details of the added comment.
+    """
     try:
-        if "task_gid" in params:
+        creds=json.loads(cred)
+        if "task_gid" in params and "accessToken" in creds:
+            accessToken = creds["accessToken"]
             if "text" in params or "html_text" in params:
                 task_gid = params["task_gid"]
                 configuration = asana.Configuration()
@@ -581,9 +948,7 @@ def asana_add_task_comment(accessToken,params):
                     if value:
                         body_data[key] = value
                 body = {"data": body_data}
-                opts = {
-                    "opt_fields": "assignee,assignee.name,created_at,created_by,created_by.name,custom_field,custom_field.date_value,custom_field.date_value.date,custom_field.date_value.date_time,custom_field.display_value,custom_field.enabled,custom_field.enum_options,custom_field.enum_options.color,custom_field.enum_options.enabled,custom_field.enum_options.name,custom_field.enum_value,custom_field.enum_value.color,custom_field.enum_value.enabled,custom_field.enum_value.name,custom_field.is_formula_field,custom_field.multi_enum_values,custom_field.multi_enum_values.color,custom_field.multi_enum_values.enabled,custom_field.multi_enum_values.name,custom_field.name,custom_field.number_value,custom_field.resource_subtype,custom_field.text_value,custom_field.type,dependency,dependency.created_by,dependency.name,dependency.resource_subtype,duplicate_of,duplicate_of.created_by,duplicate_of.name,duplicate_of.resource_subtype,duplicated_from,duplicated_from.created_by,duplicated_from.name,duplicated_from.resource_subtype,follower,follower.name,hearted,hearts,hearts.user,hearts.user.name,html_text,is_editable,is_edited,is_pinned,liked,likes,likes.user,likes.user.name,new_approval_status,new_date_value,new_dates,new_dates.due_at,new_dates.due_on,new_dates.start_on,new_enum_value,new_enum_value.color,new_enum_value.enabled,new_enum_value.name,new_multi_enum_values,new_multi_enum_values.color,new_multi_enum_values.enabled,new_multi_enum_values.name,new_name,new_number_value,new_people_value,new_people_value.name,new_resource_subtype,new_section,new_section.name,new_text_value,num_hearts,num_likes,old_approval_status,old_date_value,old_dates,old_dates.due_at,old_dates.due_on,old_dates.start_on,old_enum_value,old_enum_value.color,old_enum_value.enabled,old_enum_value.name,old_multi_enum_values,old_multi_enum_values.color,old_multi_enum_values.enabled,old_multi_enum_values.name,old_name,old_number_value,old_people_value,old_people_value.name,old_resource_subtype,old_section,old_section.name,old_text_value,previews,previews.fallback,previews.footer,previews.header,previews.header_link,previews.html_text,previews.text,previews.title,previews.title_link,project,project.name,resource_subtype,source,sticker_name,story,story.created_at,story.created_by,story.created_by.name,story.resource_subtype,story.text,tag,tag.name,target,target.created_by,target.name,target.resource_subtype,task,task.created_by,task.name,task.resource_subtype,text,type",
-                }
+                opts = {}
                 api_response = stories_api_instance.create_story_for_task(
                     body, task_gid, opts)
                 return api_response
@@ -596,17 +961,31 @@ def asana_add_task_comment(accessToken,params):
         raise Exception(json.loads(e.body))
 
 
-def asana_remove_task_comment(accessToken,params):
+def asana_remove_task_comment(cred,params):
+    """
+    remove a comment to a task in Asana.
+
+    :param str accessToken: Access token for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :story_gid: (str,required) - Globally unique identifier for the story.
+
+    Returns:
+       dict: A message confirming the deletion of the comment.
+    """
     try:
-        if "story_gid" in params:
+        creds=json.loads(cred)
+        if "story_gid" in params and "accessToken" in creds:
+            accessToken = creds["accessToken"]
             story_gid = params["story_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
             api_client = asana.ApiClient(configuration)
             stories_api_instance = asana.StoriesApi(api_client)
             stories_api_instance.delete_story(story_gid)
-            return {"message": f"Successfully deleted the specified story."}
+            return {"message": f"Successfully deleted the specified comment."}
         else:
             raise Exception("Missing Input Data")
     except ApiException as e:
         raise Exception(json.loads(e.body))
+

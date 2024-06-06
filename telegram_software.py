@@ -1,9 +1,23 @@
 from telegram import Bot,InlineKeyboardButton,InlineKeyboardMarkup,ForceReply,ReplyKeyboardMarkup,KeyboardButton,ReplyKeyboardRemove,InputMediaPhoto,InputMediaVideo,InputMediaAudio,InputMediaDocument
 import json
-async def telegram_get_chat_info(params,token):
+async def telegram_get_chat_info(params,cred):
+    """
+    Get information about a chat using the Telegram API.
+
+    :param dict params:
+        - chat_id (int or str): Unique identifier for the target chat. (required)
+
+    :param str token:
+        The bot token for authentication. (required)
+
+    :return: A JSON string containing information about the chat.
+    :rtype: str
+
+    """
     try:
+        creds=json.loads(cred)
         if 'chat_id' in params:
-            bot = Bot(token=token)
+            bot = Bot(token=creds['accessToken'])
             await bot.initialize()
             data = {}
             for key, value in params.items():
@@ -17,10 +31,24 @@ async def telegram_get_chat_info(params,token):
     except Exception as e:
         raise Exception(e)
 
-async def telegram_get_chat_administrators(params,token):
+async def telegram_get_chat_administrators(params,cred):
+    """
+    Get a list of administrators in a chat using the Telegram API.
+
+    :param dict params:
+        - chat_id (int or str): Unique identifier for the target chat. (required)
+
+    :param str token:
+        The bot token for authentication. (required)
+
+    :return: A JSON string containing information about the administrators in the chat.
+    :rtype: str
+
+    """
     try:
+        creds=json.loads(cred)
         if 'chat_id' in params:
-            bot = Bot(token=token)
+            bot = Bot(token=creds['accessToken'])
             await bot.initialize()
             data = {}
             for key, value in params.items():
@@ -37,10 +65,24 @@ async def telegram_get_chat_administrators(params,token):
     except Exception as e:
         raise Exception(e)
     
-async def telegram_leave_chat(params,token):
+async def telegram_leave_chat(params,cred):
+    """
+    Leave a chat using the Telegram API.
+
+    :param dict params:
+        - chat_id (int or str): Unique identifier for the target chat. (required)
+
+    :param str token:
+        The bot token for authentication. (required)
+
+    :return: A string indicating the success of leaving the chat.
+    :rtype: str
+
+    """
     try:
+        creds=json.loads(cred)
         if 'chat_id' in params:
-            bot = Bot(token=token)
+            bot = Bot(token=creds['accessToken'])
             await bot.initialize()
             data = {}
             for key, value in params.items():
@@ -54,10 +96,25 @@ async def telegram_leave_chat(params,token):
     except Exception as e:
         raise Exception(e)
 
-async def telegram_get_chat_member(params,token):
+async def telegram_get_chat_member(params,cred):
+    """
+    Get information about a chat member using the Telegram API.
+
+    :param dict params:
+        - chat_id (int or str): Unique identifier for the target chat. (required)
+        - user_id (int): Unique identifier for the target user. (required)
+
+    :param str token:
+        The bot token for authentication. (required)
+
+    :return: A JSON string containing information about the chat member.
+    :rtype: str
+
+    """
     try:
+        creds=json.loads(cred)
         if 'chat_id' in params and 'user_id' in params:
-            bot = Bot(token=token)
+            bot = Bot(token=creds['accessToken'])
             await bot.initialize()
             data = {}
             for key, value in params.items():
@@ -71,10 +128,25 @@ async def telegram_get_chat_member(params,token):
     except Exception as e:
         raise Exception(e)
     
-async def telegram_set_description(params,token):
+async def telegram_set_description(params,cred):
+    """
+    Set the description of a chat using the Telegram API.
+
+    :param dict params:
+        - chat_id (int or str): Unique identifier for the target chat. (required)
+        - description (str): The new description to be set for the chat. (required)
+
+    :param str token:
+        The bot token for authentication. (required)
+
+    :return: A string indicating the success of setting the description.
+    :rtype: str
+
+    """
     try:
+        creds=json.loads(cred)
         if 'chat_id' in params and 'description' in params:
-            bot = Bot(token=token)
+            bot = Bot(token=creds['accessToken'])
             await bot.initialize()
             data = {}
             for key, value in params.items():
@@ -88,10 +160,25 @@ async def telegram_set_description(params,token):
     except Exception as e:
         raise Exception(e)
 
-async def telegram_set_title(params,token):
+async def telegram_set_title(params,cred):
+    """
+    Set the title of a chat using the Telegram API.
+
+    :param dict params:
+        - chat_id (int or str): Unique identifier for the target chat. (required)
+        - title (str): The new title to be set for the chat. (required)
+
+    :param str token:
+        The bot token for authentication. (required)
+
+    :return: A string indicating the success of setting the title.
+    :rtype: str
+
+    """
     try:
+        creds=json.loads(cred)
         if 'chat_id' in params and 'title' in params:
-            bot = Bot(token=token)
+            bot = Bot(token=creds['accessToken'])
             await bot.initialize()
             data = {}
             for key, value in params.items():
@@ -105,10 +192,25 @@ async def telegram_set_title(params,token):
     except Exception as e:
         raise Exception(e)
     
-async def telegram_delete_chat_message(params,token):
+async def telegram_delete_chat_message(params,cred):
+    """
+    Delete a message from a chat using the Telegram API.
+
+    :param dict params:
+        - chat_id (int or str): Unique identifier for the target chat. (required)
+        - message_id (int): Identifier of the message to be deleted. (required)
+
+    :param str token:
+        The bot token for authentication. (required)
+
+    :return: A string indicating the success of deleting the message.
+    :rtype: str
+
+    """
     try:
+        creds=json.loads(cred)
         if 'chat_id' in params and 'message_id' in params:
-            bot = Bot(token=token)
+            bot = Bot(token=creds['accessToken'])
             await bot.initialize()
             data = {}
             for key, value in params.items():
@@ -122,10 +224,26 @@ async def telegram_delete_chat_message(params,token):
     except Exception as e:
         raise Exception(e)
     
-async def telegram_pin_message(params,token):
+async def telegram_pin_message(params,cred):
+    """
+    Pin a message in a chat using the Telegram API.
+
+    :param dict params:
+        - chat_id (int or str): Unique identifier for the target chat. (required)
+        - message_id (int): Identifier of the message to be pinned. (required)
+        - disable_notification (bool): Pass True to disable notification for the pinned message. (optional)
+
+    :param str token:
+        The bot token for authentication. (required)
+
+    :return: A string indicating the success of pinning the message.
+    :rtype: str
+
+    """
     try:
+        creds=json.loads(cred)
         if 'chat_id' in params and 'message_id' in params:
-            bot = Bot(token=token)
+            bot = Bot(token=creds['accessToken'])
             await bot.initialize()
             data = {}
             for key, value in params.items():
@@ -139,10 +257,25 @@ async def telegram_pin_message(params,token):
     except Exception as e:
         raise Exception(e)
   
-async def telegram_unpin_message(params,token):
+async def telegram_unpin_message(params,cred):
+    """
+    Unpin a message in a chat using the Telegram API.
+
+    :param dict params:
+        - chat_id (int or str): Unique identifier for the target chat. (required)
+        - message_id (int): Identifier of the message to be unpinned. (required)
+
+    :param str token:
+        The bot token for authentication. (required)
+
+    :return: A string indicating the success of unpinning the message.
+    :rtype: str
+
+    """
     try:
+        creds=json.loads(cred)
         if 'chat_id' in params and 'message_id' in params:
-            bot = Bot(token=token)
+            bot = Bot(token=creds['accessToken'])
             await bot.initialize()
             data = {}
             for key, value in params.items():
@@ -157,10 +290,25 @@ async def telegram_unpin_message(params,token):
         raise Exception(e)
 
 
-async def telegram_send_chat_action(params,token):
+async def telegram_send_chat_action(params,cred):
+    """
+    Send a chat action to a chat using the Telegram API.
+
+    :param dict params:
+        - chat_id (int or str): Unique identifier for the target chat. (required)
+        - action (str): Type of action to broadcast.(required)
+
+    :param str token:
+        The bot token for authentication. (required)
+
+    :return: A string indicating the success of sending the chat action.
+    :rtype: str
+
+    """
     try:
+        creds=json.loads(cred)
         if 'chat_id' in params and 'action' in params:
-            bot = Bot(token=token)
+            bot = Bot(token=creds['accessToken'])
             await bot.initialize()
             data = {}
             for key, value in params.items():
@@ -175,10 +323,11 @@ async def telegram_send_chat_action(params,token):
         raise Exception(e)
     
 
-async def telegram_edit_message_text(params,token):
+async def telegram_edit_message_text(params,cred):
     try:
+        creds=json.loads(cred)
         if ('chat_id' in params and 'message_id' in params and 'text' in params) or ('inline_message_id' in params and 'text' in params) :
-            bot = Bot(token=token)
+            bot = Bot(token=creds['accessToken'])
             await bot.initialize()
             data = {}
             for key, value in params.items():
@@ -217,10 +366,11 @@ async def telegram_edit_message_text(params,token):
     except Exception as e:
         raise Exception(e)
 
-async def telegram_send_audio(params,token):
+async def telegram_send_audio(params,cred):
     try:
+        creds=json.loads(cred)
         if 'chat_id' in params and 'audio' in params :
-            bot = Bot(token=token)
+            bot = Bot(token=creds['accessToken'])
             await bot.initialize()
             data = {}
             for key, value in params.items():
@@ -277,10 +427,11 @@ async def telegram_send_audio(params,token):
         raise Exception(e)
     
 
-async def telegram_send_document(params,token):
+async def telegram_send_document(params,cred):
     try:
+        creds=json.loads(cred)
         if 'chat_id' in params and 'document' in params:
-            bot = Bot(token=token)
+            bot = Bot(token=creds['accessToken'])
             await bot.initialize()
             data = {}
             for key, value in params.items():
@@ -336,10 +487,11 @@ async def telegram_send_document(params,token):
     except Exception as e:
         raise Exception(e)
 
-async def telegram_send_location(params,token):
+async def telegram_send_location(params,cred):
     try:
+        creds=json.loads(cred)
         if 'chat_id' in params and 'latitude' in params and 'longitude' in params:
-            bot = Bot(token=token)
+            bot = Bot(token=creds['accessToken'])
             await bot.initialize()
             data = {}
             for key, value in params.items():
@@ -395,10 +547,11 @@ async def telegram_send_location(params,token):
     except Exception as e:
         raise Exception(e)
 
-async def telegram_send_media_group(params,token):
+async def telegram_send_media_group(params,cred):
     try:
+        creds=json.loads(cred)
         if 'chat_id' in params and 'media' in params:
-            bot = Bot(token=token)
+            bot = Bot(token=creds['accessToken'])
             await bot.initialize()
             data = {}
             for key, value in params.items():
@@ -437,10 +590,11 @@ async def telegram_send_media_group(params,token):
     except Exception as e:
         raise Exception(e)
 
-async def telegram_send_message(params,token):
+async def telegram_send_message(params,cred):
     try:
+        creds=json.loads(cred)
         if 'chat_id' in params and 'text' in params:
-            bot = Bot(token=token)
+            bot = Bot(token=creds['accessToken'])
             await bot.initialize()
             data = {}
             for key, value in params.items():
@@ -496,10 +650,11 @@ async def telegram_send_message(params,token):
     except Exception as e:
         raise Exception(e)
 
-async def telegram_send_photo(params,token):
+async def telegram_send_photo(params,cred):
     try:
+        creds=json.loads(cred)
         if 'chat_id' in params and 'photo' in params:
-            bot = Bot(token=token)
+            bot = Bot(token=creds['accessToken'])
             await bot.initialize()
             data = {}
             for key, value in params.items():
@@ -555,10 +710,11 @@ async def telegram_send_photo(params,token):
     except Exception as e:
         raise Exception(e)
 
-async def telegram_send_video(params,token):
+async def telegram_send_video(params,cred):
     try:
+        creds=json.loads(cred)
         if 'chat_id' in params and 'video' in params:
-            bot = Bot(token=token)
+            bot = Bot(token=creds['accessToken'])
             await bot.initialize()
             data = {}
             for key, value in params.items():
@@ -615,10 +771,11 @@ async def telegram_send_video(params,token):
         raise Exception(e)
 
 
-async def telegram_get_file(params,token):
+async def telegram_get_file(params,cred):
     try:
+        creds=json.loads(cred)
         if 'file_id' in params:
-            bot = Bot(token=token)
+            bot = Bot(token=creds['accessToken'])
             await bot.initialize()
             data = {}
             for key, value in params.items():

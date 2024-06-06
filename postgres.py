@@ -1,10 +1,11 @@
 import psycopg2
+import json
 
 def create_connection(creds):
     con = psycopg2.connect(
         host=creds["host"],
         database=creds["database"],
-        user=creds["user"],
+        user=creds["username"],
         password=creds["password"],
         port="5432",
     )
@@ -12,8 +13,23 @@ def create_connection(creds):
 
 
 def postgres_create_table(creds, params):
+    """
+    Create a table in a PostgreSQL database.
+
+    :param creds: Dictionary containing PostgreSQL database credentials.
+    :type creds: dict
+    :param params: Dictionary containing parameters.
+    
+        - :table_name: (str, required) - The name of the table to be created.
+        - :fields: (dict, required) - A dictionary specifying the table fields and their data types.
+
+    :return: A message indicating successful table creation.
+    :rtype: str
+    :raises Exception: If there is an issue with the PostgreSQL database or missing input data.
+    """
     try:
-        con = create_connection(creds)
+        credentials=json.loads(creds)
+        con = create_connection(credentials)
         cursor = con.cursor()
         if (
             "table_name" in params
@@ -42,8 +58,23 @@ def postgres_create_table(creds, params):
 
 
 def postgres_insert_row(creds, params):
+    """
+    Insert a row into a table in a PostgreSQL database.
+
+    :param creds: Dictionary containing PostgreSQL database credentials.
+    :type creds: dict
+    :param params: Dictionary containing parameters.
+
+        - :table_name: (str, required) - The name of the table where the row will be inserted.
+        - :data: (dict, required) - A dictionary specifying the data for the new row.
+
+    :return: A message indicating successful row insertion.
+    :rtype: str
+    :raises Exception: If there is an issue with the PostgreSQL database or missing input data.
+    """
     try:
-        con = create_connection(creds)
+        credentials=json.loads(creds)
+        con = create_connection(credentials)
         cursor = con.cursor()
         if (
             "table_name" in params
@@ -77,8 +108,27 @@ def postgres_insert_row(creds, params):
 
 
 def postgres_update_row(creds, params):
+    """
+    Update rows in a table in a PostgreSQL database based on specified conditions.
+
+    :param creds: Dictionary containing PostgreSQL database credentials.
+    :type creds: dict
+    :param params: Dictionary containing parameters.
+
+        - :table_name: (str, required) - The name of the table to be updated.
+        - :data: (dict, required) - A dictionary specifying the data to update in the rows.
+        - :conditions: (dict, required) - A dictionary specifying the conditions for updating rows.
+
+            - :type: (str, required) - The type of conditions ("AND", "OR", or "custom").
+            - :conditions: (list or str, required) - Conditions for updating rows.
+
+    :return: A message indicating successful row update.
+    :rtype: str
+    :raises Exception: If there is an issue with the PostgreSQL database or missing input data.
+    """
     try:
-        con = create_connection(creds)
+        credentials=json.loads(creds)
+        con = create_connection(credentials)
         cursor = con.cursor()
         if (
             "table_name" in params
@@ -125,8 +175,26 @@ def postgres_update_row(creds, params):
 
 
 def postgres_delete_row(creds, params):
+    """
+    Delete rows from a table in a PostgreSQL database based on specified conditions.
+
+    :param creds: Dictionary containing PostgreSQL database credentials.
+    :type creds: dict
+    :param params: Dictionary containing parameters.
+
+        - :table_name: (str, required) - The name of the table from which rows will be deleted.
+        - :conditions: (dict, optional) - A dictionary specifying the conditions for deleting rows.
+
+            - :type: (str, required) - The type of conditions ("AND", "OR", or "custom").
+            - :conditions: (list or str, required) - Conditions for deleting rows.
+
+    :return: A message indicating successful row deletion.
+    :rtype: str
+    :raises Exception: If there is an issue with the PostgreSQL database or missing input data.
+    """
     try:
-        con = create_connection(creds)
+        credentials=json.loads(creds)
+        con = create_connection(credentials)
         cursor = con.cursor()
         if (
             "table_name" in params
@@ -170,8 +238,23 @@ def postgres_delete_row(creds, params):
 
 
 def postgres_delete_table(creds, params):
+    """
+    Delete a PostgreSQL table based on specified conditions.
+
+    :param creds: Dictionary containing PostgreSQL database credentials.
+    :type creds: dict
+    :param params: Dictionary containing parameters.
+
+        - :table_name: (str, required) - The name of the table to be deleted.
+        - :type: (str, required) - The type of deletion ("clear" or "drop").
+
+    :return: A message indicating successful table deletion.
+    :rtype: str
+    :raises Exception: If there is an issue with the PostgreSQL database or missing input data.
+    """
     try:
-        con = create_connection(creds)
+        credentials=json.loads(creds)
+        con = create_connection(credentials)
         cursor = con.cursor()
         if (
             "table_name" in params
@@ -201,8 +284,22 @@ def postgres_delete_table(creds, params):
 
 
 def postgres_execute_custom_query(creds, params):
+    """
+    Execute a custom SQL query in a PostgreSQL database.
+
+    :param creds: Dictionary containing PostgreSQL database credentials.
+    :type creds: dict
+    :param params: Dictionary containing parameters.
+
+        - :query: (str, required) - The custom SQL query to be executed.
+
+    :return: Result of the query execution or a message indicating success.
+    :rtype: list or str
+    :raises Exception: If there is an issue with the PostgreSQL database or missing input data.
+    """
     try:
-        con = create_connection(creds)
+        credentials=json.loads(creds)
+        con = create_connection(credentials)
         cursor = con.cursor()
         if "query" in params and params["query"] and params["query"] != "":
             query = params["query"]
@@ -225,8 +322,27 @@ def postgres_execute_custom_query(creds, params):
 
 
 def postgres_select_row(creds, params):
+    """
+    Select rows from a table in a PostgreSQL database based on specified conditions.
+
+    :param creds: Dictionary containing PostgreSQL database credentials.
+    :type creds: dict
+    :param params: Dictionary containing parameters.
+
+        - :table_name: (str, required) - The name of the table from which rows will be selected.
+        - :count: (int, optional) - The number of rows to retrieve.
+        - :conditions: (dict, optional) - A dictionary specifying the conditions for selecting rows.
+
+            - :type: (str, required) - The type of conditions ("AND", "OR", or "custom").
+            - :conditions: (list or str, required) - Conditions for selecting rows.
+
+    :return: Selected rows from the specified table.
+    :rtype: list
+    :raises Exception: If there is an issue with the PostgreSQL database or missing input data.
+    """
     try:
-        con = create_connection(creds)
+        credentials=json.loads(creds)
+        con = create_connection(credentials)
         cursor = con.cursor()
         count = None
         if (
